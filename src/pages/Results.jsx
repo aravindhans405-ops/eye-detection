@@ -41,8 +41,8 @@ export default function Results() {
   const isDry = detectionResults.condition === 'Dry'
 
   return (
-    <div className="min-h-[calc(100vh-64px)] px-4 py-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="page-container min-h-[calc(100vh-64px)]">
+      <div className="content-wrapper w-full py-8 overflow-hidden">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 animate-slide-up">
           <div>

@@ -31,10 +31,10 @@ function App() {
   return (
     <AuthContext.Provider value={{ user, login, logout, register, detectionResults, setDetectionResults }}>
       <Router>
-        <div className="min-h-screen relative">
+        <div className="flex flex-col min-h-screen relative w-full overflow-x-hidden">
           <ParticlesBg />
           <Navbar />
-          <main className="relative z-10">
+          <main className="relative z-10 flex flex-col flex-1 w-full">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />

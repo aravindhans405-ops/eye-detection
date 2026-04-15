@@ -20,8 +20,8 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="min-h-[calc(100vh-64px)] px-4 py-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="page-container min-h-[calc(100vh-64px)]">
+      <div className="content-wrapper w-full py-8 overflow-hidden">
         {/* Welcome Header */}
         <div className="mb-8 animate-slide-up">
           <div className="glass-card p-8 relative overflow-hidden">

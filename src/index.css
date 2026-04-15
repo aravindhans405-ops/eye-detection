@@ -31,8 +31,19 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   width: 100%;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Scrollbar */
@@ -96,6 +107,13 @@ body {
   background-clip: text;
 }
 
+.gradient-text-3 {
+  background: var(--gradient-3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .glass-card {
   background: rgba(26, 26, 62, 0.45);
   backdrop-filter: blur(20px);
@@ -126,9 +144,15 @@ body {
   font-size: 1rem;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-secondary {
@@ -168,6 +192,12 @@ body {
 .input-field:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.input-field:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(15, 15, 35, 0.5);
 }
 
 .input-field::placeholder {
@@ -291,4 +321,21 @@ body {
 
 .timer-ring circle {
   transition: stroke-dashoffset 1s linear;
+}
+/* Page container utilities */
+.page-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }

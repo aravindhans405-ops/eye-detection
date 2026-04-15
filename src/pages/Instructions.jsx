@@ -37,8 +37,8 @@ export default function Instructions() {
   ]
 
   return (
-    <div className="min-h-[calc(100vh-64px)] px-4 py-12">
-      <div className="max-w-4xl mx-auto">
+    <div className="page-container min-h-[calc(100vh-64px)]">
+      <div className="content-wrapper max-w-4xl w-full py-12 overflow-hidden">
         <div className="text-center mb-12 animate-slide-up">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm mb-4">
             <BookOpen className="w-4 h-4" />

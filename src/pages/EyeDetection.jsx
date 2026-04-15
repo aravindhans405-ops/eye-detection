@@ -279,8 +279,8 @@ Keep it concise (150 words max) and use simple language.`
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] px-4 py-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="page-container min-h-[calc(100vh-64px)]">
+      <div className="content-wrapper w-full py-8 overflow-hidden">
         <div className="mb-6 animate-slide-up">
           <h1 className="text-2xl lg:text-3xl font-bold">
             <span className="gradient-text">Eye Detection & Analysis</span>
