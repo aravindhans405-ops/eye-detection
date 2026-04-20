@@ -1,128 +1,172 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../App'
-import { ScanEye, BookOpen, BarChart3, Activity, Brain, Clock, Shield, ChevronRight, ActivitySquare, AlertCircle, FileText } from 'lucide-react'
+import {
+  ScanEye, BookOpen, BarChart3, Eye, Activity, Brain,
+  Clock, ArrowRight, Sparkles, TrendingUp, Shield,
+  ChevronRight, Play, AlertCircle, CheckCircle2
+} from 'lucide-react'
 
 export default function Dashboard() {
   const { user, detectionResults } = useAuth()
-  const [greeting, setGreeting] = useState('')
-
-  useEffect(() => {
-    const hour = new Date().getHours()
-    if (hour < 12) setGreeting('Good morning')
-    else if (hour < 18) setGreeting('Good afternoon')
-    else setGreeting('Good evening')
-  }, [])
 
   const quickActions = [
-    { to: '/detection', icon: <ScanEye className="w-8 h-8" />, title: 'Start Eye Detection', desc: 'Securely start real-time optical tracking.', color: '#00D4AA' },
-    { to: '/instructions', icon: <BookOpen className="w-8 h-8" />, title: 'View Guide', desc: 'Step-by-step setup and troubleshooting.', color: '#f59e0b' },
-    { to: '/results', icon: <BarChart3 className="w-8 h-8" />, title: 'Analyze Results', desc: 'Review historical health data metrics.', color: '#7F77DD' },
+    {
+      to: '/detection',
+      icon: <ScanEye size={24} />,
+      iconClass: 'icon-box-blue',
+      title: 'Start Eye Detection',
+      desc: 'Begin 30-second real-time webcam analysis for wet/dry eye detection.',
+      tag: 'Primary',
+      tagColor: '#2563EB',
+    },
+    {
+      to: '/instructions',
+      icon: <BookOpen size={24} />,
+      iconClass: 'icon-box-sky',
+      title: 'View Instructions',
+      desc: 'Learn preparation tips and best practices for maximum accuracy.',
+      tag: 'Guide',
+      tagColor: '#0284C7',
+    },
+    {
+      to: '/results',
+      icon: <BarChart3 size={24} />,
+      iconClass: 'icon-box-green',
+      title: 'Analysis Results',
+      desc: 'Review your detection results, EAR graphs, and AI health report.',
+      tag: detectionResults ? 'Available' : 'Pending',
+      tagColor: detectionResults ? '#059669' : '#D97706',
+    },
   ]
 
-  // Dummy recent activities
-  const recentActivities = [
-    { id: 1, type: 'session', date: '2 mins ago', summary: 'Detection Session completed. High Blink Rate detected.', icon: <ActivitySquare className="w-5 h-5 text-amber-500" /> },
-    { id: 2, type: 'ai', date: '5 hrs ago', summary: 'AI Health Assessment generated for Dry Eye symptoms.', icon: <Brain className="w-5 h-5 text-[#7F77DD]" /> },
-    { id: 3, type: 'export', date: '2 days ago', summary: 'Monthly Data Export downloaded (PDF).', icon: <FileText className="w-5 h-5 text-[#00D4AA]" /> },
+  const metrics = [
+    {
+      icon: <Eye size={18} />, iconClass: 'icon-box-blue',
+      label: 'Detection Status',
+      value: detectionResults ? 'Completed' : 'Not Started',
+      color: detectionResults ? '#059669' : '#D97706',
+      sub: detectionResults ? 'Session analyzed' : 'Run a session',
+    },
+    {
+      icon: <Activity size={18} />, iconClass: 'icon-box-sky',
+      label: 'Blink Rate',
+      value: detectionResults ? `${detectionResults.blinkRate}/min` : '—',
+      color: '#0284C7',
+      sub: detectionResults ? (detectionResults.blinkRate >= 15 ? 'Normal range' : 'Below normal') : 'Awaiting data',
+    },
+    {
+      icon: <Brain size={18} />, iconClass: 'icon-box-purple',
+      label: 'AI Analysis',
+      value: detectionResults ? 'Available' : 'Pending',
+      color: '#7C3AED',
+      sub: detectionResults ? 'LLM report ready' : 'Run detection first',
+    },
+    {
+      icon: <Clock size={18} />, iconClass: 'icon-box-amber',
+      label: 'Last Session',
+      value: detectionResults ? 'Recent' : 'None',
+      color: '#D97706',
+      sub: detectionResults ? new Date(detectionResults.timestamp).toLocaleTimeString() : 'No sessions yet',
+    },
+  ]
+
+  const capabilities = [
+    { label: 'Eye Condition', value: 'Wet / Dry Classification' },
+    { label: 'Movement Tracking', value: 'L · R · U · D · Center' },
+    { label: 'Blink Detection', value: 'Real-time EAR Analysis' },
+    { label: 'AI Explanation', value: 'LLM via Puter.js' },
   ]
 
   return (
-    <div className="w-full flex flex-col flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
-        
-        {/* Welcome Header */}
-        <div className="mb-10 animate-slide-up">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 text-white">
-            {greeting}, <span className="text-gradient-teal">{user?.username || 'Guest'}</span>
-          </h1>
-          <p className="text-[#9CA3AF] text-base sm:text-lg">
-            Dashboard overview of your optical health metrics.
-          </p>
-        </div>
+    <div style={{ padding: '40px 0' }}>
+      <div className="page-wrapper">
 
-        {/* 4 Stat Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
-          
-          {/* Status Card */}
-          <div className="glass-card p-4 sm:p-6 flex flex-col justify-between h-[140px] animate-slide-up delay-100">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-xs sm:text-sm font-semibold text-[#9CA3AF] uppercase tracking-wider">Detection Status</span>
-              <ScanEye className="w-5 h-5 text-[#9CA3AF]" />
-            </div>
-            <div className="flex items-center gap-3">
-              <div className={`status-dot ${detectionResults ? 'active' : 'inactive'}`} />
-              <span className={`text-lg sm:text-xl font-bold ${detectionResults ? 'text-[#10b981]' : 'text-white'}`}>
-                {detectionResults ? 'Active' : 'Standby'}
+        {/* Welcome banner */}
+        <div className="animate-fade-up" style={{
+          background: 'linear-gradient(135deg, #1E3A8A, #1D4ED8)',
+          borderRadius: '20px', padding: '32px 36px',
+          marginBottom: '32px', position: 'relative', overflow: 'hidden',
+        }}>
+          <div style={{
+            position: 'absolute', right: '-20px', top: '-20px',
+            width: '200px', height: '200px', borderRadius: '50%',
+            background: 'rgba(255,255,255,0.05)',
+          }} />
+          <div style={{
+            position: 'absolute', right: '60px', bottom: '-40px',
+            width: '140px', height: '140px', borderRadius: '50%',
+            background: 'rgba(255,255,255,0.04)',
+          }} />
+          <div style={{ position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <Sparkles size={16} color="#FCD34D" />
+              <span style={{ fontSize: '0.8rem', color: '#93C5FD', fontWeight: 600, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+                DASHBOARD
               </span>
             </div>
+            <h1 style={{
+              fontFamily: "'Plus Jakarta Sans',sans-serif",
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800,
+              color: '#fff', marginBottom: '8px', letterSpacing: '-0.02em',
+            }}>
+              Welcome back, {user?.username || 'User'} 👋
+            </h1>
+            <p style={{ color: '#93C5FD', fontSize: '0.95rem' }}>
+              Monitor your eye health with AI-powered detection and real-time analysis.
+            </p>
           </div>
+        </div>
 
-          {/* Blink Rate Card */}
-          <div className="glass-card p-4 sm:p-6 flex flex-col justify-between h-[140px] animate-slide-up delay-200">
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-xs sm:text-sm font-semibold text-[#9CA3AF] uppercase tracking-wider">Blink Rate</span>
-              <Activity className="w-5 h-5 text-[#9CA3AF]" />
-            </div>
-            <div className="flex items-end gap-2 text-white">
-              <span className="text-2xl sm:text-3xl font-bold">{detectionResults?.blinkRate || '—'}</span>
-              <span className="text-xs sm:text-sm text-[#9CA3AF] mb-1">/ min</span>
-            </div>
-          </div>
-
-          {/* AI Analysis Card */}
-          <div className="glass-card p-4 sm:p-6 flex flex-col justify-between h-[140px] animate-slide-up delay-300 relative overflow-hidden">
-            <div className="flex justify-between items-start mb-2 relative z-10">
-              <span className="text-xs sm:text-sm font-semibold text-[#9CA3AF] uppercase tracking-wider">AI Analysis</span>
-            </div>
-            <div className="flex items-center gap-4 relative z-10">
-              <div className="relative w-12 h-12 flex items-center justify-center">
-                {/* Circular Progress Ring */}
-                <svg className="absolute inset-0 w-full h-full -rotate-90">
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="#2E3E56" strokeWidth="3" />
-                  <circle cx="24" cy="24" r="20" fill="none" stroke="#7F77DD" strokeWidth="3" 
-                    strokeDasharray="125" strokeDashoffset={detectionResults ? "25" : "125"} 
-                    className="transition-all duration-1000 ease-out" />
-                </svg>
-                <Brain className={`w-5 h-5 ${detectionResults ? 'text-[#7F77DD]' : 'text-[#9CA3AF]'}`} />
+        {/* Metrics row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+          {metrics.map((m, i) => (
+            <div key={i} className="metric-card animate-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <div className={`icon-box ${m.iconClass}`} style={{ width: '38px', height: '38px', borderRadius: '10px' }}>
+                  {m.icon}
+                </div>
+                <span style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 600, letterSpacing: '0.06em', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+                  {m.label.toUpperCase()}
+                </span>
               </div>
-              <span className="text-lg sm:text-xl font-bold text-white">
-                {detectionResults ? 'Complete' : 'Pending'}
-              </span>
+              <div style={{
+                fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '1.3rem',
+                fontWeight: 800, color: m.color, marginBottom: '4px',
+              }}>{m.value}</div>
+              <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>{m.sub}</div>
             </div>
-          </div>
-
-          {/* Last Session Card */}
-          <div className="glass-card p-4 sm:p-6 flex flex-col justify-between h-[140px] animate-slide-up" style={{animationDelay: '400ms'}}>
-            <div className="flex justify-between items-start mb-2">
-              <span className="text-xs sm:text-sm font-semibold text-[#9CA3AF] uppercase tracking-wider">Last Session</span>
-              <Clock className="w-5 h-5 text-[#9CA3AF]" />
-            </div>
-            <div className="text-lg sm:text-xl font-bold text-white">
-              {detectionResults ? 'Just now' : 'No records'}
-            </div>
-          </div>
-
+          ))}
         </div>
 
-        {/* Quick Actions Grid */}
-        <div className="mb-12 animate-slide-up" style={{animationDelay: '200ms'}}>
-          <h2 className="text-lg sm:text-xl font-bold mb-6 text-white flex items-center gap-2">
-            <ActivitySquare className="w-5 h-5 text-[#00D4AA]" /> Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        {/* Quick Actions */}
+        <div style={{ marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '1rem', fontWeight: 700, color: '#0F172A' }}>
+              Quick Actions
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
             {quickActions.map((action, i) => (
-              <Link key={i} to={action.to} className="group no-underline">
-                <div className="glass-card p-4 sm:p-6 h-[200px] flex flex-col justify-between transition-all duration-200">
-                  <div>
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110" style={{ backgroundColor: `${action.color}20` }}>
-                      <div style={{ color: action.color }} className="w-6 h-6 sm:w-8 sm:h-8">{action.icon}</div>
+              <Link key={i} to={action.to} style={{ textDecoration: 'none' }}>
+                <div className="card animate-fade-up" style={{ padding: '24px', animationDelay: `${i * 0.1}s`, cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <div className={`icon-box ${action.iconClass}`} style={{ width: '46px', height: '46px', borderRadius: '12px' }}>
+                      {action.icon}
                     </div>
-                    <h3 className="text-base sm:text-lg font-bold text-white mb-2">{action.title}</h3>
-                    <p className="text-xs sm:text-sm text-[#9CA3AF] line-clamp-2">{action.desc}</p>
+                    <span style={{
+                      fontSize: '0.7rem', fontWeight: 700, padding: '3px 9px',
+                      borderRadius: '99px', background: action.tagColor + '15',
+                      color: action.tagColor, border: `1px solid ${action.tagColor}30`,
+                      fontFamily: "'Plus Jakarta Sans',sans-serif",
+                    }}>{action.tag}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-xs sm:text-sm font-bold" style={{ color: action.color }}>
-                    Proceed <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <h3 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '0.95rem', fontWeight: 700, color: '#0F172A', marginBottom: '6px' }}>
+                    {action.title}
+                  </h3>
+                  <p style={{ fontSize: '0.83rem', color: '#64748B', lineHeight: 1.6, marginBottom: '14px' }}>{action.desc}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.83rem', fontWeight: 600, color: action.tagColor, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+                    Open <ChevronRight size={14} />
                   </div>
                 </div>
               </Link>
@@ -130,54 +174,53 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* System & Recent Grids */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          
-          {/* System Capabilities (Span 2/3) */}
-          <div className="lg:col-span-2 glass-card p-6 sm:p-8 animate-slide-up" style={{animationDelay: '300ms'}}>
-            <h2 className="text-base sm:text-lg font-bold mb-6 text-white flex items-center gap-2">
-              <Shield className="w-5 h-5 text-[#7F77DD]" />
+        {/* System capabilities */}
+        <div className="card" style={{ padding: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
+            <div className="icon-box icon-box-green" style={{ width: '32px', height: '32px', borderRadius: '8px' }}>
+              <Shield size={15} />
+            </div>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '0.95rem', fontWeight: 700, color: '#0F172A' }}>
               System Capabilities
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {[
-                { label: 'Condition Classifier', value: 'Wet/Dry Neural Net' },
-                { label: 'Ocular Tracking', value: '4-Axis Coordinate Map' },
-                { label: 'Fatigue Monitor', value: 'EAR Calculation Engine' },
-                { label: 'Diagnostic Engine', value: 'LLM Report Generator' },
-              ].map((item, i) => (
-                <div key={i} className="glass-panel p-3 sm:p-4 flex flex-col justify-center">
-                  <div className="text-xs text-[#9CA3AF] uppercase tracking-wider mb-1 font-semibold">{item.label}</div>
-                  <div className="text-sm font-bold text-white tracking-wide">{item.value}</div>
-                </div>
-              ))}
-            </div>
           </div>
-
-          {/* Recent Activity (Span 1/3) */}
-          <div className="lg:col-span-1 glass-card p-6 sm:p-8 animate-slide-up" style={{animationDelay: '400ms'}}>
-            <h2 className="text-base sm:text-lg font-bold mb-6 text-white flex items-center gap-2">
-              <Clock className="w-5 h-5 text-[#f59e0b]" />
-              Recent Activity
-            </h2>
-            <div className="space-y-6">
-              {recentActivities.map((act) => (
-                <div key={act.id} className="flex gap-4">
-                  <div className="mt-1 flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-[#1B263B] border border-[#2E3E56] flex items-center justify-center flex-shrink-0">
-                      {act.icon}
-                    </div>
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="text-xs sm:text-sm font-medium text-white mb-1 line-clamp-2">{act.summary}</h4>
-                    <p className="text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">{act.date}</p>
-                  </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+            {capabilities.map((cap, i) => (
+              <div key={i} style={{
+                padding: '14px 16px', borderRadius: '10px',
+                background: 'var(--bg)', border: '1px solid #F1F5F9',
+              }}>
+                <div style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 600, letterSpacing: '0.06em', marginBottom: '5px' }}>
+                  {cap.label.toUpperCase()}
                 </div>
-              ))}
-            </div>
+                <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#334155' }}>{cap.value}</div>
+              </div>
+            ))}
           </div>
-
         </div>
+
+        {/* Start CTA if no results */}
+        {!detectionResults && (
+          <div className="animate-fade-up" style={{
+            marginTop: '24px', padding: '20px 24px',
+            background: '#EFF6FF', border: '1px solid #BFDBFE',
+            borderRadius: '14px', display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <AlertCircle size={18} color="#2563EB" />
+              <div>
+                <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, color: '#1E3A8A', fontSize: '0.9rem' }}>
+                  No detection sessions yet
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#60A5FA' }}>Start a session to see your eye health analysis</div>
+              </div>
+            </div>
+            <Link to="/detection" className="btn-primary" style={{ padding: '9px 20px', fontSize: '0.875rem', flexShrink: 0 }}>
+              <Play size={14} /> Start Now
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   )

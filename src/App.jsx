@@ -8,33 +8,24 @@ import Dashboard from './pages/Dashboard'
 import EyeDetection from './pages/EyeDetection'
 import Instructions from './pages/Instructions'
 import Results from './pages/Results'
-import ParticlesBg from './components/ParticlesBg'
 
-// Auth Context
 export const AuthContext = createContext()
-
-export function useAuth() {
-  return useContext(AuthContext)
-}
+export function useAuth() { return useContext(AuthContext) }
 
 function App() {
   const [user, setUser] = useState(null)
   const [detectionResults, setDetectionResults] = useState(null)
 
   const login = (userData) => setUser(userData)
-  const logout = () => {
-    setUser(null)
-    setDetectionResults(null)
-  }
+  const logout = () => { setUser(null); setDetectionResults(null) }
   const register = (userData) => setUser(userData)
 
   return (
     <AuthContext.Provider value={{ user, login, logout, register, detectionResults, setDetectionResults }}>
       <Router>
-        <div className="flex flex-col min-h-screen relative w-full overflow-x-hidden">
-          <ParticlesBg />
+        <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
           <Navbar />
-          <main className="relative z-10 flex flex-col flex-1 w-full">
+          <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />

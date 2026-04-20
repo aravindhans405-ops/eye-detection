@@ -1,273 +1,196 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
-import { 
-  ChevronRight, ChevronLeft, Check, CheckCircle2, 
-  AlertTriangle, Lightbulb, Info, HelpCircle, ThumbsUp, ThumbsDown,
-  Camera, Play, FileText, Brain, BookOpen
-} from 'lucide-react'
+import { BookOpen, CheckCircle2, AlertCircle, Camera, Lightbulb, User, ShieldCheck, ArrowRight } from 'lucide-react'
 
-// Subcomponents for Guide elements
-const Callout = ({ type, title, children }) => {
-  const styles = {
-    info: 'bg-blue-500/10 border-blue-500/30 text-blue-100',
-    warning: 'bg-amber-500/10 border-amber-500/30 text-amber-100',
-    tip: 'bg-[#00D4AA]/10 border-[#00D4AA]/30 text-[#00D4AA]'
-  }
-  const icons = {
-    info: <Info className="w-5 h-5 text-blue-400 mt-0.5" />,
-    warning: <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />,
-    tip: <Lightbulb className="w-5 h-5 text-[#00D4AA] mt-0.5" />
-  }
+const steps = [
+  {
+    icon: <User size={20} />, 
+    iconClass: 'icon-box-blue',
+    step: '01', 
+    title: 'Positioning',
+    desc: 'Sit comfortably with your face centered in the camera frame, approximately 30–50 cm away from the screen.',
+  },
+  {
+    icon: <Lightbulb size={20} />, 
+    iconClass: 'icon-box-amber',
+    step: '02', 
+    title: 'Lighting',
+    desc: 'Ensure your face is evenly lit. Avoid strong backlighting or deep shadows, as these may reduce detection accuracy.',
+  },
+  {
+    icon: <Camera size={20} />, 
+    iconClass: 'icon-box-sky',
+    step: '03', 
+    title: 'Testing Process',
+    desc: 'The test lasts 30 seconds. Look naturally at the screen and follow any on-screen movement cues throughout.',
+  },
+  {
+    icon: <ShieldCheck size={20} />, 
+    iconClass: 'icon-box-green',
+    step: '04', 
+    title: 'Privacy & Security',
+    desc: 'All processing happens locally in your browser. No video data is ever transmitted to servers or stored permanently.',
+  },
+]
 
-  return (
-    <div className={`p-4 rounded-xl border flex gap-4 my-6 ${styles[type]}`}>
-      <div className="flex-shrink-0">{icons[type]}</div>
-      <div>
-        {title && <h3 className="font-bold mb-1">{title}</h3>}
-        <div className="text-[16px] leading-[1.8] opacity-90">{children}</div>
-      </div>
-    </div>
-  )
-}
-
-const FeedbackWidget = () => {
-  const [voted, setVoted] = useState(null)
-  if (voted) return <div className="text-sm text-[#00D4AA] font-bold mt-8 flex items-center gap-2"><Check className="w-4 h-4"/> Thank you for your feedback!</div>
-  return (
-    <div className="mt-8 flex items-center gap-4 py-4 border-t border-[#2E3E56]">
-      <span className="text-sm text-[#9CA3AF] font-bold">Was this section helpful?</span>
-      <button onClick={() => setVoted('up')} className="p-2 rounded-lg bg-[#1B263B] text-[#9CA3AF] hover:text-[#00D4AA] hover:bg-[#00D4AA]/10 transition-colors"><ThumbsUp className="w-4 h-4" /></button>
-      <button onClick={() => setVoted('down')} className="p-2 rounded-lg bg-[#1B263B] text-[#9CA3AF] hover:text-[#ef4444] hover:bg-[#ef4444]/10 transition-colors"><ThumbsDown className="w-4 h-4" /></button>
-    </div>
-  )
-}
-
-const FAQAccordion = ({ question, answer }) => {
-  const [open, setOpen] = useState(false)
-  return (
-    <div className="border border-[#2E3E56] rounded-xl mb-4 bg-[#0D1B2A] overflow-hidden">
-      <button onClick={() => setOpen(!open)} className="w-full p-4 flex items-center justify-between text-left hover:bg-[#1B263B] transition-colors">
-        <span className="font-bold text-white text-[16px]">{question}</span>
-        <ChevronRight className={`w-5 h-5 text-[#00D4AA] transition-transform ${open ? 'rotate-90' : ''}`} />
-      </button>
-      {open && <div className="p-4 pt-1 border-t border-[#2E3E56] text-[#9CA3AF] text-[16px] leading-[1.8]">{answer}</div>}
-    </div>
-  )
-}
+const tips = [
+  'Remove glasses or tinted lenses if possible for maximum detection accuracy.',
+  'Keep your head relatively still during the full 30-second measurement period.',
+  'Blink naturally — do not force or suppress blinks during the session.',
+  'Make sure your hair or other objects are not obscuring either of your eyes.',
+  'Ensure you\'re in a quiet environment to avoid distracting movements.',
+  'Allow the camera permission prompt when prompted by the browser.',
+]
 
 export default function Instructions() {
-  const [activeStep, setActiveStep] = useState(0)
-  const [activeSection, setActiveSection] = useState('stepper') // 'stepper', 'faq', 'disclaimer'
-
-  const steps = [
-    {
-      id: 'setup',
-      title: 'Setup & Positioning',
-      icon: <Camera className="w-5 h-5" />,
-      content: (
-        <div>
-          <h2 className="text-[22px] font-bold text-white mb-4">Step 1: Environmental Setup</h2>
-          <p className="text-[16px] leading-[1.8] text-[#9CA3AF]">Before initiating the detection sequence, ensure your physical environment is optimized for the optical sensors. Our deep learning models require clear visibility of your facial landmarks.</p>
-          
-          <Callout type="warning" title="Lighting is Critical">
-            Avoid strong backlighting (sitting with a window behind you). Ensure the light source is in front of you, illuminating your face evenly without casting harsh shadows on your eyes.
-          </Callout>
-
-          <ul className="list-disc pl-5 mt-4 space-y-2 text-[16px] leading-[1.8] text-[#9CA3AF]">
-            <li>Position yourself 30-50cm from the webcam.</li>
-            <li>Remove glasses or heavily tinted lenses if possible.</li>
-            <li>Maintain a neutral head position facing directly at the camera.</li>
-          </ul>
-          <FeedbackWidget />
-        </div>
-      )
-    },
-    {
-      id: 'detection',
-      title: 'Start Detection',
-      icon: <Play className="w-5 h-5" />,
-      content: (
-        <div>
-          <h2 className="text-[22px] font-bold text-white mb-4">Step 2: Running the Scan</h2>
-          <p className="text-[16px] leading-[1.8] text-[#9CA3AF]">The core detection protocol lasts for exactly 30 seconds. During this window, the system captures localized EAR (Eye Aspect Ratio) values to determine your ocular state.</p>
-          
-          <Callout type="tip" title="Blink Naturally">
-            Do not force yourself to stare or blink unnaturally. The AI is calibrated against standard human baseline rates (15-20 blinks per minute). Altering your behavior will skew the results.
-          </Callout>
-
-          <div className="bg-[#1B263B] p-4 rounded-xl border border-[#2E3E56] my-4">
-            <h3 className="text-white font-bold mb-2">What you will see in the HUD:</h3>
-            <ul className="space-y-2 text-[16px] leading-[1.8] text-[#9CA3AF]">
-              <li><strong className="text-[#00D4AA]">Confidence Bar:</strong> Real-time neural network certainty limit.</li>
-              <li><strong className="text-[#00D4AA]">Terminal Output:</strong> Live tracking of EAR values and coordinate vectors.</li>
-            </ul>
-          </div>
-          <FeedbackWidget />
-        </div>
-      )
-    },
-    {
-      id: 'results',
-      title: 'Read Results',
-      icon: <FileText className="w-5 h-5" />,
-      content: (
-        <div>
-          <h2 className="text-[22px] font-bold text-white mb-4">Step 3: Reviewing Metrics</h2>
-          <p className="text-[16px] leading-[1.8] text-[#9CA3AF]">Once the 30-second timer completes, you will be redirected to the Results dashboard. This comprehensive view translates raw tracking data into actionable insights.</p>
-          
-          <Callout type="info" title="Understanding EAR">
-            EAR (Eye Aspect Ratio) measures the ratio of distances between facial landmarks on the eyes. A sharp drop in EAR indicates a blink. Sustained low EAR indicates fatigue or micro-sleep.
-          </Callout>
-          
-          <FeedbackWidget />
-        </div>
-      )
-    },
-    {
-      id: 'ai',
-      title: 'Interpret AI',
-      icon: <Brain className="w-5 h-5" />,
-      content: (
-        <div>
-          <h2 className="text-[22px] font-bold text-white mb-4">Step 4: LLM Analysis</h2>
-          <p className="text-[16px] leading-[1.8] text-[#9CA3AF]">Our system passes your aggregate metrics to an integrated Large Language Model (Puter.js) to generate a summarized medical assessment.</p>
-          
-          <p className="text-[16px] leading-[1.8] text-[#9CA3AF] mt-4">
-            The AI considers your total blink count, condition classification (Wet/Dry), and vector tracking patterns to formulate personalized recommendations. If the AI detects severe abnormalities (e.g., extremely low blink rates indicating severe dry eye), it will flag the report for professional review.
-          </p>
-          
-          <FeedbackWidget />
-        </div>
-      )
-    }
-  ]
-
-  const faqs = [
-    { q: "Is my video data stored on your servers?", a: "No. All video processing and frame analysis occurs locally in your browser leveraging WebAssembly and client-side scripts. No image data ever leaves your device." },
-    { q: "Can I use this on my mobile phone?", a: "Yes, the system is fully responsive. Ensure your mobile browser has permission to access the front-facing camera." },
-    { q: "What is considered a 'normal' blink rate?", a: "A healthy human blink rate usually falls between 15 and 20 blinks per minute. Rates significantly below this while focusing on screens can contribute to dry eye condition." }
-  ]
-
   return (
-    <div className="w-full flex flex-col flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto w-full">
-        
-        {/* Mobile Tab Nav (hidden on desktop) */}
-        <div className="lg:hidden flex overflow-x-auto gap-2 pb-4 mb-8 scrollbar-hide border-b border-[#2E3E56]">
-          {['stepper', 'faq', 'disclaimer'].map(sec => (
-            <button key={sec} onClick={() => setActiveSection(sec)} 
-              className={`px-4 py-2 font-bold whitespace-nowrap rounded-t-lg transition-colors ${activeSection === sec ? 'text-[#00D4AA] bg-[#1B263B] border-b-2 border-[#00D4AA]' : 'text-[#9CA3AF] hover:text-white'}`}>
-              {sec.toUpperCase()}
-            </button>
+    <div style={{ padding: '60px 0', background: 'var(--bg)', minHeight: 'calc(100vh - 64px)' }}>
+      <div className="page-wrapper" style={{ maxWidth: '900px' }}>
+
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '56px' }} className="animate-fade-up">
+          <div className="feature-tag" style={{ marginBottom: '20px' }}>
+            <BookOpen size={14} /> 
+            <span>User Preparation Guide</span>
+          </div>
+          <h1 style={{
+            fontSize: 'clamp(2rem, 5vw, 2.75rem)', 
+            fontWeight: 800,
+            color: 'var(--text-primary)', 
+            letterSpacing: '-0.03em', 
+            marginBottom: '16px',
+            lineHeight: 1.1
+          }}>
+            How to use <span className="text-gradient">AI Eye Detect</span>
+          </h1>
+          <p style={{ 
+            color: 'var(--text-secondary)', 
+            fontSize: '1.1rem', 
+            maxWidth: '580px', 
+            margin: '0 auto', 
+            lineHeight: 1.65 
+          }}>
+            Follow these essential steps and best practices to ensure the most accurate detection of your eye condition and movement patterns.
+          </p>
+        </div>
+
+        {/* Steps grid */}
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+          gap: '20px', 
+          marginBottom: '40px' 
+        }}>
+          {steps.map((step, i) => (
+            <div key={i} className="card animate-fade-up" style={{ padding: '28px', animationDelay: `${i * 0.1}s` }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+                <div className={`icon-box ${step.iconClass}`} style={{ width: '48px', height: '48px', borderRadius: '12px' }}>
+                  {step.icon}
+                </div>
+                <div>
+                  <div style={{ 
+                    fontSize: '0.75rem', 
+                    fontWeight: 700, 
+                    color: 'var(--text-muted)', 
+                    letterSpacing: '0.1em',
+                    marginBottom: '2px'
+                  }}>
+                    STEP {step.step}
+                  </div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {step.title}
+                  </h3>
+                </div>
+              </div>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{step.desc}</p>
+            </div>
           ))}
         </div>
 
-        {/* Desktop + Mobile Layout */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 relative">
-          
-          {/* Desktop Sticky TOC Sidebar */}
-          <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-28 bg-[#0D1B2A] border border-[#2E3E56] rounded-xl p-6 shadow-lg animate-slide-up">
-            <h3 className="text-white font-bold text-lg mb-6 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-[#00D4AA]"/> Contents
-            </h3>
-            <nav className="flex flex-col gap-3">
-              <button onClick={() => {setActiveSection('stepper'); window.scrollTo({top:0, behavior:'smooth'})}} 
-                className={`text-left px-4 py-2 rounded-lg transition-colors font-semibold text-sm ${activeSection === 'stepper' ? 'bg-[#00D4AA]/10 text-[#00D4AA]' : 'text-[#9CA3AF] hover:text-white hover:bg-[#1B263B]'}`}>
-                Interactive Guide
-              </button>
-              <button onClick={() => {setActiveSection('faq'); document.getElementById('faq-section')?.scrollIntoView({behavior:'smooth'})}} 
-                className={`text-left px-4 py-2 rounded-lg transition-colors font-semibold text-sm ${activeSection === 'faq' ? 'bg-[#00D4AA]/10 text-[#00D4AA]' : 'text-[#9CA3AF] hover:text-white hover:bg-[#1B263B]'}`}>
-                FAQ
-              </button>
-              <button onClick={() => {setActiveSection('disclaimer'); document.getElementById('disclaimer-section')?.scrollIntoView({behavior:'smooth'})}} 
-                className={`text-left px-4 py-2 rounded-lg transition-colors font-semibold text-sm ${activeSection === 'disclaimer' ? 'bg-[#00D4AA]/10 text-[#00D4AA]' : 'text-[#9CA3AF] hover:text-white hover:bg-[#1B263B]'}`}>
-                Medical Disclaimer
-              </button>
-            </nav>
-          </aside>
-
-          {/* Main Content Area */}
-          <div className="flex-1 min-w-0">
-            
-            {/* Header */}
-            <div className="mb-10 animate-slide-up">
-              <h1 className="text-4xl sm:text-5xl lg:text-5xl font-bold text-white mb-3">Platform Documentation</h1>
-              <p className="text-base sm:text-lg text-[#9CA3AF] leading-relaxed">Comprehensive guide to utilizing the optical health screening tools effectively.</p>
+        {/* Best practices */}
+        <div className="card animate-fade-up" style={{ padding: '32px', marginBottom: '32px', animationDelay: '0.4s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
+            <div className="icon-box icon-box-green" style={{ width: '44px', height: '44px', borderRadius: '11px' }}>
+              <CheckCircle2 size={22} />
             </div>
-            
-            {/* INTERACTIVE STEPPER */}
-            <div id="guide-section" className={`glass-card p-6 sm:p-8 mb-14 ${activeSection !== 'stepper' && 'lg:block hidden'} animate-slide-up`}>
-              
-              {/* Progress Bar Header */}
-              <div className="flex flex-col gap-6 mb-10">
-                <div className="flex gap-2">
-                  {steps.map((s, i) => (
-                    <div key={s.id} className="flex-1 flex flex-col gap-3" onClick={() => setActiveStep(i)} role="button">
-                      <div className={`h-2 rounded-full transition-colors ${i <= activeStep ? 'bg-[#00D4AA] shadow-[0_0_10px_rgba(0,212,170,0.4)]' : 'bg-[#2E3E56]'}`} />
-                      <span className={`text-xs font-bold uppercase text-center ${i <= activeStep ? 'text-[#00D4AA]' : 'text-[#9CA3AF]'}`}>
-                        {i < activeStep && <CheckCircle2 className="w-3 h-3 inline mr-1"/>} 
-                        Step {i+1}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Step Content */}
-              <div className="min-h-[350px] mb-10 animate-fade-in">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#00D4AA] to-[#7F77DD] flex items-center justify-center shadow-lg text-[#0D1B2A] text-[#0D1B2A] flex-shrink-0">
-                    {steps[activeStep].icon}
-                  </div>
-                  <div className="text-sm font-bold text-[#7F77DD] tracking-widest uppercase">Phase {activeStep + 1} of 4</div>
-                </div>
-                {steps[activeStep].content}
-              </div>
-
-              {/* Next/Back Controls */}
-              <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-8 border-t border-[#2E3E56]">
-                <button 
-                  onClick={() => setActiveStep(p => Math.max(0, p - 1))}
-                  disabled={activeStep === 0}
-                  className="order-2 sm:order-1 btn-outline border-none text-[#9CA3AF] hover:text-white disabled:opacity-30 px-6 py-3 sm:p-0 rounded-lg sm:rounded-none"
-                >
-                  <ChevronLeft className="w-5 h-5 inline mr-1"/> Previous
-                </button>
-                
-                {activeStep < steps.length - 1 ? (
-                  <button onClick={() => setActiveStep(p => Math.min(steps.length - 1, p + 1))} className="order-1 sm:order-2 btn-primary py-3 sm:py-2 rounded-lg sm:rounded">
-                    Next Step <ChevronRight className="w-5 h-5 ml-1"/>
-                  </button>
-                ) : (
-                  <Link to="/detection" className="order-1 sm:order-2 btn-primary bg-[#7F77DD] hover:bg-[#6c64ce] py-3 sm:py-2 rounded-lg sm:rounded text-center">
-                    Start Scanning <Play className="w-5 h-5 ml-1"/>
-                  </Link>
-                )}
-              </div>
-            </div>
-
-            {/* FAQ SECTION */}
-            <div id="faq-section" className={`mb-14 ${activeSection !== 'faq' && 'lg:block hidden'} animate-slide-up`}>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 flex items-center gap-3">
-                <HelpCircle className="w-8 h-8 text-[#7F77DD] flex-shrink-0" /> Frequently Asked Questions
+            <div>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                Best Practices for Accuracy
               </h2>
-              <div className="space-y-4">
-                {faqs.map((f, i) => <FAQAccordion key={i} question={f.q} answer={f.a} />)}
-              </div>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Follow these tips for the most reliable screening results</p>
             </div>
-
-            {/* MEDICAL DISCLAIMER */}
-            <div id="disclaimer-section" className={`mb-12 ${activeSection !== 'disclaimer' && 'lg:block hidden'} animate-slide-up`}>
-              <Callout type="warning" title="Medical Disclaimer">
-                This application is designed strictly for screening and informational purposes. The AI analysis and optical metrics provided do not constitute professional medical advice, diagnosis, or treatment. Always seek the advice of an ophthalmologist, optometrist, or other qualified health provider with any questions regarding a medical eye condition. Never disregard professional medical advice due to information obtained from this software.
-              </Callout>
-            </div>
-
           </div>
-
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+            gap: '16px' 
+          }}>
+            {tips.map((tip, i) => (
+              <div key={i} style={{ 
+                display: 'flex', 
+                gap: '12px', 
+                alignItems: 'flex-start', 
+                padding: '16px', 
+                borderRadius: '12px', 
+                background: 'var(--blue-50)', 
+                border: '1px solid var(--blue-100)',
+                transition: 'all 0.2s ease'
+              }}>
+                <CheckCircle2 size={16} color="#10B981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{tip}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Action buttons */}
+        <div 
+          className="animate-fade-up" 
+          style={{ 
+            display: 'flex', 
+            gap: '16px', 
+            flexWrap: 'wrap', 
+            justifyContent: 'center',
+            marginBottom: '40px',
+            animationDelay: '0.5s' 
+          }}
+        >
+          <Link to="/detection" className="btn-primary" style={{ padding: '14px 32px', fontSize: '1rem' }}>
+            Go to Detection <ArrowRight size={18} />
+          </Link>
+          <Link to="/dashboard" className="btn-secondary" style={{ padding: '14px 32px', fontSize: '1rem' }}>
+            Back to Dashboard
+          </Link>
+        </div>
+
+        {/* Disclaimer */}
+        <div style={{
+          padding: '20px 24px', 
+          borderRadius: '16px',
+          background: '#FFF5F5', 
+          border: '1px solid #FEE2E2',
+          display: 'flex', 
+          gap: '16px', 
+          alignItems: 'flex-start',
+        }} className="animate-fade-up">
+          <AlertCircle size={20} color="var(--danger)" style={{ flexShrink: 0, marginTop: '2px' }} />
+          <div>
+            <p style={{ fontSize: '0.875rem', color: '#991B1B', lineHeight: 1.6 }}>
+              <strong style={{ color: '#7F1D1D' }}>Medical Disclaimer:</strong> This tool is for screening and informational purposes only and does not provide a formal medical diagnosis. 
+              If you experience severe eye discomfort, vision loss, or persistent irritation, please consult a qualified healthcare professional immediately.
+            </p>
+          </div>
+        </div>
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          div[style*="gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))'"] {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

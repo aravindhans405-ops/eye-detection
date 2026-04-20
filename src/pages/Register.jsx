@@ -1,328 +1,241 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../App'
-import { UserPlus, Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle, AlertCircle, Zap, Shield, Cpu } from 'lucide-react'
+import { UserPlus, Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle, AlertCircle, Zap, Shield, ScanEye, Activity, Brain } from 'lucide-react'
 
 export default function Register() {
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '', agreeToTerms: false })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showPw, setShowPw] = useState(false)
+  const [showConfPw, setShowConfPw] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
 
-  const getPasswordStrength = (password) => {
-    if (!password) return { level: 0, label: '', color: '' }
-    let strength = 0
-    if (password.length >= 6) strength++
-    if (password.length >= 12) strength++
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++
-    if (/[0-9]/.test(password)) strength++
-    if (/[^a-zA-Z0-9]/.test(password)) strength++
-
-    const levels = [
+  const getPwStrength = (pw) => {
+    if (!pw) return { level: 0, label: '', color: '' }
+    let s = 0
+    if (pw.length >= 6) s++
+    if (pw.length >= 12) s++
+    if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) s++
+    if (/[0-9]/.test(pw)) s++
+    if (/[^a-zA-Z0-9]/.test(pw)) s++
+    return [
       { level: 0, label: '', color: '' },
-      { level: 1, label: 'Weak', color: 'bg-red-500' },
-      { level: 2, label: 'Fair', color: 'bg-yellow-500' },
-      { level: 3, label: 'Good', color: 'bg-blue-500' },
-      { level: 4, label: 'Strong', color: 'bg-green-500' },
-      { level: 5, label: 'Very Strong', color: 'bg-green-600' }
-    ]
-    return levels[strength]
+      { level: 1, label: 'Weak', color: '#EF4444' },
+      { level: 2, label: 'Fair', color: '#F59E0B' },
+      { level: 3, label: 'Good', color: '#3B82F6' },
+      { level: 4, label: 'Strong', color: '#10B981' },
+      { level: 5, label: 'Very Strong', color: '#059669' },
+    ][s]
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
-
-    if (!form.username || !form.email || !form.password) {
-      setError('All fields are required')
-      return
-    }
-    if (form.username.length < 3) {
-      setError('Username must be at least 3 characters')
-      return
-    }
-    if (!form.email.includes('@')) {
-      setError('Please enter a valid email address')
-      return
-    }
-    if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-    if (form.password.length < 6) {
-      setError('Password must be at least 6 characters')
-      return
-    }
-    if (!form.agreeToTerms) {
-      setError('Please agree to the Terms & Conditions')
-      return
-    }
-
+    e.preventDefault(); setError(''); setSuccess('')
+    if (!form.username || !form.email || !form.password) return setError('All fields are required')
+    if (form.username.length < 3) return setError('Username must be at least 3 characters')
+    if (!form.email.includes('@')) return setError('Please enter a valid email')
+    if (form.password !== form.confirmPassword) return setError('Passwords do not match')
+    if (form.password.length < 6) return setError('Password must be at least 6 characters')
+    if (!form.agreeToTerms) return setError('Please agree to the Terms & Conditions')
     setLoading(true)
     setTimeout(() => {
       register({ username: form.username, email: form.email })
-      setSuccess('Account created successfully! Redirecting...')
+      setSuccess('Account created! Redirecting...')
       setTimeout(() => navigate('/dashboard'), 500)
       setLoading(false)
     }, 1000)
   }
 
-  const passwordStrength = getPasswordStrength(form.password)
-
-  const features = [
-    { icon: <Cpu className="w-5 h-5" />, text: 'AI-Powered Detection' },
-    { icon: <Shield className="w-5 h-5" />, text: 'Secure & Private' },
-    { icon: <Zap className="w-5 h-5" />, text: 'Real-time Analysis' }
-  ]
+  const pwStrength = getPwStrength(form.password)
 
   return (
-    <div className="min-h-[calc(100vh-64px)] grid grid-cols-1 lg:grid-cols-2 gap-0">
-      {/* Left Section - Form */}
-      <div className="flex items-center justify-center px-6 py-12 lg:px-12">
-        <div className="w-full max-w-md animate-slide-in-right">
-          {/* Logo & Branding */}
-          <div className="mb-10">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-purple-500 to-teal-500">
-                <UserPlus className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold gradient-text-2">EyeDetect AI</span>
+    <div style={{ minHeight: 'calc(100vh - 64px)', display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+
+      {/* ─── Left: Form ─── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '48px 40px', background: '#fff',
+        borderRight: '1px solid #EEF2FF',
+        overflowY: 'auto',
+      }}>
+        <div style={{ width: '100%', maxWidth: '420px' }} className="animate-fade-up">
+          <div style={{ marginBottom: '32px' }}>
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '14px',
+              background: 'linear-gradient(135deg, #7C3AED, #EC4899)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: '20px', boxShadow: '0 8px 20px rgba(124,58,237,0.25)',
+            }}>
+              <UserPlus size={22} color="white" />
             </div>
-            <p className="text-slate-400 text-sm">Advanced eye detection technology</p>
+            <h1 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '1.8rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', marginBottom: '8px' }}>Create account</h1>
+            <p style={{ color: '#64748B', fontSize: '0.9rem' }}>Start detecting eye conditions for free today</p>
           </div>
 
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Create Account</h1>
-            <p className="text-slate-400">Join our platform and start detecting eye movements in real-time</p>
-          </div>
-
-          {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 backdrop-blur-sm animate-slide-up">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                <span className="text-red-400 text-sm font-medium">{error}</span>
-              </div>
+            <div style={{ padding: '12px 16px', borderRadius: '10px', background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', fontSize: '0.875rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={15} /> {error}
             </div>
           )}
-
-          {/* Success Message */}
           {success && (
-            <div className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30 backdrop-blur-sm animate-slide-up">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-green-400 text-sm font-medium">{success}</span>
-              </div>
+            <div style={{ padding: '12px 16px', borderRadius: '10px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#059669', fontSize: '0.875rem', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle size={15} /> {success}
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Username Field */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2.5">Username</label>
-              <div className="relative group">
-                <User className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
-                <input
-                  type="text"
-                  className="input-field pl-4 pr-11"
-                  placeholder="john_doe"
-                  value={form.username}
-                  onChange={e => setForm({ ...form, username: e.target.value })}
-                  disabled={loading}
-                />
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Username */}
+            <Field label="Username">
+              <div style={{ position: 'relative' }}>
+                <User size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', pointerEvents: 'none' }} />
+                <input type="text" className="input-field" style={{ paddingRight: '40px' }} placeholder="john_doe"
+                  value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} disabled={loading} />
               </div>
-            </div>
+            </Field>
 
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2.5">Email Address</label>
-              <div className="relative group">
-                <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
-                <input
-                  type="email"
-                  className="input-field pl-4 pr-11"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={e => setForm({ ...form, email: e.target.value })}
-                  disabled={loading}
-                />
+            {/* Email */}
+            <Field label="Email address">
+              <div style={{ position: 'relative' }}>
+                <Mail size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', pointerEvents: 'none' }} />
+                <input type="email" className="input-field" style={{ paddingRight: '40px' }} placeholder="you@example.com"
+                  value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} disabled={loading} />
               </div>
-            </div>
+            </Field>
 
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2.5">Password</label>
-              <div className="relative group">
-                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className="input-field pl-4 pr-12"
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={e => setForm({ ...form, password: e.target.value })}
-                  disabled={loading}
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                  disabled={loading}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            {/* Password */}
+            <Field label="Password">
+              <div style={{ position: 'relative' }}>
+                <Lock size={16} style={{ position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', pointerEvents: 'none' }} />
+                <input type={showPw ? 'text' : 'password'} className="input-field" style={{ paddingRight: '70px' }} placeholder="Min. 6 characters"
+                  value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} disabled={loading} />
+                <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}>
+                  {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
-
-              {/* Password Strength Indicator */}
               {form.password && (
-                <div className="mt-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-slate-400 font-medium">Password Strength</span>
-                    {passwordStrength.label && (
-                      <span className={`text-xs font-semibold px-2 py-1 rounded ${passwordStrength.color} text-white`}>
-                        {passwordStrength.label}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map(i => (
-                      <div
-                        key={i}
-                        className={`h-1 flex-1 rounded-full transition-all ${
-                          i <= passwordStrength.level ? passwordStrength.color : 'bg-slate-700'
-                        }`}
-                      />
+                <div style={{ marginTop: '8px' }}>
+                  <div style={{ display: 'flex', gap: '4px', marginBottom: '5px' }}>
+                    {[1,2,3,4,5].map(i => (
+                      <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: i <= pwStrength.level ? pwStrength.color : '#E2E8F0', transition: 'background 0.2s' }} />
                     ))}
                   </div>
+                  {pwStrength.label && <span style={{ fontSize: '0.75rem', color: pwStrength.color, fontWeight: 600 }}>{pwStrength.label}</span>}
                 </div>
               )}
-            </div>
+            </Field>
 
-            {/* Confirm Password Field */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2.5">Confirm Password</label>
-              <div className="relative group">
-                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  className="input-field pl-4 pr-12"
-                  placeholder="••••••••"
-                  value={form.confirmPassword}
-                  onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
-                  disabled={loading}
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                  disabled={loading}
-                >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            {/* Confirm password */}
+            <Field label="Confirm password">
+              <div style={{ position: 'relative' }}>
+                <Lock size={16} style={{ position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', pointerEvents: 'none' }} />
+                <input type={showConfPw ? 'text' : 'password'} className="input-field" style={{ paddingRight: '70px' }} placeholder="Repeat password"
+                  value={form.confirmPassword} onChange={e => setForm({ ...form, confirmPassword: e.target.value })} disabled={loading} />
+                <button type="button" onClick={() => setShowConfPw(!showConfPw)} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}>
+                  {showConfPw ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
               {form.confirmPassword && form.password === form.confirmPassword && (
-                <p className="text-xs text-green-400 mt-2 flex items-center gap-1">
-                  <CheckCircle className="w-3.5 h-3.5" /> Passwords match
-                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', fontSize: '0.75rem', color: '#059669' }}>
+                  <CheckCircle size={12} /> Passwords match
+                </div>
               )}
-            </div>
+            </Field>
 
-            {/* Terms Agreement */}
-            <label className="flex items-start gap-3 cursor-pointer group p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors">
-              <input
-                type="checkbox"
-                checked={form.agreeToTerms}
-                onChange={e => setForm({ ...form, agreeToTerms: e.target.checked })}
-                className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500 transition-colors mt-1 flex-shrink-0 cursor-pointer"
-                disabled={loading}
-              />
-              <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">
-                I agree to the <Link to="#" className="text-blue-400 hover:text-blue-300 font-medium">Terms & Conditions</Link> and <Link to="#" className="text-blue-400 hover:text-blue-300 font-medium">Privacy Policy</Link>
+            {/* Terms */}
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', padding: '12px', borderRadius: '10px', border: '1px solid #E2E8F0', background: '#F8FAFF' }}>
+              <input type="checkbox" checked={form.agreeToTerms} onChange={e => setForm({ ...form, agreeToTerms: e.target.checked })}
+                style={{ width: '16px', height: '16px', accentColor: '#7C3AED', marginTop: '1px', flexShrink: 0 }} disabled={loading} />
+              <span style={{ fontSize: '0.83rem', color: '#64748B', lineHeight: 1.5 }}>
+                I agree to the <Link to="#" style={{ color: '#7C3AED', textDecoration: 'none', fontWeight: 600 }}>Terms & Conditions</Link> and{' '}
+                <Link to="#" style={{ color: '#7C3AED', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy</Link>
               </span>
             </label>
 
-            {/* Submit Button */}
-            <button 
-              type="submit" 
-              className="btn-primary w-full justify-center mt-8 disabled:opacity-50 disabled:cursor-not-allowed" 
-              disabled={loading || !form.agreeToTerms}
-            >
+            <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: '0.95rem', marginTop: '4px', background: 'linear-gradient(135deg, #7C3AED, #EC4899)', boxShadow: '0 8px 20px rgba(124,58,237,0.25)' }} disabled={loading || !form.agreeToTerms}>
               {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Creating Account...</span>
-                </div>
-              ) : (
-                <>Create Account <ArrowRight className="w-5 h-5 ml-1" /></>
-              )}
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin-slow 0.7s linear infinite' }} />
+                  Creating Account…
+                </span>
+              ) : (<>Create Account <ArrowRight size={16} /></>)}
             </button>
           </form>
 
-          {/* Sign In Link */}
-          <div className="mt-6 text-center text-sm text-slate-400">
+          <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.875rem', color: '#64748B' }}>
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
-              Sign In
-            </Link>
-          </div>
+            <Link to="/login" style={{ color: '#7C3AED', fontWeight: 600, textDecoration: 'none' }}>Sign In</Link>
+          </p>
         </div>
       </div>
 
-      {/* Right Section - Branding & Features */}
-      <div className="hidden lg:flex flex-col items-start justify-center px-12 py-12 relative overflow-hidden">
-        {/* Background gradient effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-teal-500/10 pointer-events-none" />
-        
-        {/* Decorative elements */}
-        <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-blue-500/5 blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-pink-500/5 blur-3xl" />
+      {/* ─── Right: Branding ─── */}
+      <div style={{
+        background: 'linear-gradient(145deg, #3B0764 0%, #6D28D9 50%, #7C3AED 100%)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', padding: '60px 48px',
+        position: 'relative', overflow: 'hidden',
+      }} className="hide-on-mobile">
+        <div style={{ position: 'absolute', top: '-60px', left: '-60px', width: '280px', height: '280px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }} />
+        <div style={{ position: 'absolute', bottom: '-80px', right: '-40px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)' }} />
 
-        <div className="relative z-10 max-w-lg">
-          {/* Main Heading */}
-          <div className="mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              <span className="text-slate-100">Join Our Community</span>
-              <br />
-              <span className="gradient-text-2 text-5xl">Start Detecting Today</span>
-            </h2>
-            <p className="text-slate-400 text-lg leading-relaxed">
-              Get instant access to our advanced eye detection platform. No credit card required. Start detecting eye movements in seconds.
-            </p>
-          </div>
+        <div style={{ position: 'relative', maxWidth: '420px', width: '100%' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#C4B5FD', letterSpacing: '0.1em', marginBottom: '12px', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>JOIN TODAY</div>
+          <h2 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.15, marginBottom: '14px' }}>
+            Start monitoring<br />your eye health today
+          </h2>
+          <p style={{ color: '#C4B5FD', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '32px' }}>
+            Get instant access — no credit card, no downloads. Just your browser and webcam.
+          </p>
 
-          {/* Features List */}
-          <div className="space-y-4 mb-12">
-            {features.map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-4 group cursor-pointer">
-                <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:border-blue-500/40 transition-all">
-                  <div className="text-blue-400">{feature.icon}</div>
-                </div>
-                <span className="text-slate-300 font-medium group-hover:text-slate-100 transition-colors">{feature.text}</span>
+          {[
+            { icon: <ScanEye size={18} />, text: 'Wet & Dry eye detection in 30 seconds' },
+            { icon: <Activity size={18} />, text: 'Real-time movement & blink tracking' },
+            { icon: <Brain size={18} />, text: 'LLM-powered health insights & tips' },
+            { icon: <Shield size={18} />, text: 'Privacy-first — all processing in browser' },
+          ].map((f, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#C4B5FD', flexShrink: 0 }}>
+                {f.icon}
               </div>
-            ))}
-          </div>
+              <span style={{ fontSize: '0.875rem', color: '#E9D5FF' }}>{f.text}</span>
+            </div>
+          ))}
 
-          {/* Testimonial Section */}
-          <div className="p-6 rounded-lg bg-slate-800/50 border border-slate-700/50 backdrop-blur-sm">
-            <p className="text-slate-300 italic mb-4 leading-relaxed">
-              "The eye detection technology is incredibly accurate. Our team uses it daily for research and it hasn't let us down."
+          <div style={{
+            marginTop: '32px', padding: '20px', borderRadius: '14px',
+            background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+          }}>
+            <p style={{ fontSize: '0.875rem', color: '#E9D5FF', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '14px' }}>
+              "The eye detection technology is incredibly accurate. Our team uses it daily for research."
             </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-teal-500" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'linear-gradient(135deg, #A78BFA, #EC4899)' }} />
               <div>
-                <p className="text-sm font-semibold text-slate-100">Sarah Johnson</p>
-                <p className="text-xs text-slate-400">Research Lead</p>
+                <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '0.85rem', fontWeight: 700, color: '#fff' }}>Sarah Johnson</div>
+                <div style={{ fontSize: '0.75rem', color: '#C4B5FD' }}>Research Lead, BioMed Dept.</div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) { .hide-on-mobile { display: none !important; } }
+        @media (max-width: 768px) { div[style*="gridTemplateColumns: '1fr 1fr'"] { grid-template-columns: 1fr !important; } }
+      `}</style>
+    </div>
+  )
+}
+
+function Field({ label, children }) {
+  return (
+    <div>
+      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '7px', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+        {label}
+      </label>
+      {children}
     </div>
   )
 }

@@ -1,298 +1,228 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../App'
 import {
   BarChart3, Calendar, Clock, Activity, Eye, Brain,
-  Download, RefreshCw, ArrowLeft, TrendingUp, Search,
-  ChevronLeft, ChevronRight, Droplets, Sun, AlertTriangle
+  Droplets, Sun, Download, Share2, RefreshCw, ArrowLeft,
+  CheckCircle2, TrendingUp, AlertTriangle, Sparkles
 } from 'lucide-react'
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  AreaChart, Area, BarChart, Bar, Cell, PieChart, Pie, Legend
+  AreaChart, Area, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer
 } from 'recharts'
+
+const earData = [
+  { time: '0s', EAR: 0.32 }, { time: '5s', EAR: 0.28 },
+  { time: '10s', EAR: 0.13 }, { time: '12s', EAR: 0.31 },
+  { time: '15s', EAR: 0.29 }, { time: '20s', EAR: 0.27 },
+  { time: '23s', EAR: 0.11 }, { time: '26s', EAR: 0.30 },
+  { time: '30s', EAR: 0.29 },
+]
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null
+  return (
+    <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)', fontSize: '0.8rem' }}>
+      <p style={{ color: '#94A3B8', marginBottom: '4px' }}>{label}</p>
+      <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, color: '#2563EB' }}>EAR: {payload[0].value}</p>
+    </div>
+  )
+}
 
 export default function Results() {
   const { detectionResults } = useAuth()
-  const [currentPage, setCurrentPage] = useState(1)
-  const rowsPerPage = 5
+  if (!detectionResults) return <Navigate to="/dashboard" />
 
-  // Handle Empty State
-  if (!detectionResults) {
-    return (
-      <div className="w-full flex flex-col flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center min-h-[60vh]">
-          <div className="max-w-md w-full glass-card p-10 sm:p-12 text-center flex flex-col items-center animate-slide-up">
-            <div className="w-24 h-24 rounded-full bg-[#1B263B] border-2 border-[#2E3E56] flex items-center justify-center mb-8">
-              <BarChart3 className="w-10 h-10 text-[#9CA3AF]" />
+  const isDry = detectionResults.condition === 'Dry'
+  const blinkNormal = detectionResults.blinkRate >= 15
+
+  const metrics = [
+    { icon: <Eye size={18} />, iconCls: 'icon-box-blue', label: 'Blink Rate', value: `${detectionResults.blinkRate}/min`, badge: blinkNormal ? { text: 'Normal', cls: 'badge-green' } : { text: 'Low', cls: 'badge-yellow' } },
+    { icon: <Activity size={18} />, iconCls: 'icon-box-sky', label: 'Eye Movements', value: detectionResults.movements, badge: null },
+    { icon: <TrendingUp size={18} />, iconCls: 'icon-box-purple', label: 'Avg EAR', value: detectionResults.earAvg.toFixed(3), badge: null },
+    { icon: <CheckCircle2 size={18} />, iconCls: 'icon-box-green', label: 'Confidence', value: `${detectionResults.accuracy}%`, badge: { text: 'High', cls: 'badge-green' } },
+  ]
+
+  return (
+    <div style={{ padding: '40px 0', background: 'var(--bg)', minHeight: 'calc(100vh - 64px)' }}>
+      <div className="page-wrapper">
+
+        {/* Header */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '28px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <BarChart3 size={16} color="#2563EB" />
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2563EB', letterSpacing: '0.08em', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>ANALYSIS REPORT</span>
             </div>
-            <h2 className="text-3xl font-bold text-white mb-3">No Results Found</h2>
-            <p className="text-base text-[#9CA3AF] mb-8 leading-relaxed">
-              You haven't run any detection sessions yet. Start a scan to generate your comprehensive optical health report.
-            </p>
-            <Link to="/detection" className="btn-primary w-full py-3 text-center rounded-lg">
-              Start First Session
+            <h1 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '1.6rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+              Session Results
+            </h1>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button className="btn-secondary" style={{ padding: '9px 16px', fontSize: '0.85rem' }}>
+              <Download size={14} /> Export
+            </button>
+            <button className="btn-secondary" style={{ padding: '9px 16px', fontSize: '0.85rem' }}>
+              <Share2 size={14} /> Share
+            </button>
+            <Link to="/detection" className="btn-primary" style={{ padding: '9px 16px', fontSize: '0.85rem' }}>
+              <RefreshCw size={14} /> New Test
             </Link>
           </div>
         </div>
-      </div>
-    )
-  }
 
-  // Derived Data
-  const isDry = detectionResults.condition === 'Dry'
-  const computedScore = isDry ? 65 : 92
-  const riskLevel = computedScore > 85 ? 'Low' : computedScore > 60 ? 'Medium' : 'High'
-  const gaugeColor = computedScore > 85 ? '#10b981' : computedScore > 60 ? '#f59e0b' : '#ef4444'
-
-  // Dummy Chart Data
-  const earData = [
-    { time: '0s', value: 0.32 }, { time: '5s', value: 0.28 },
-    { time: '10s', value: 0.15 }, { time: '15s', value: 0.31 },
-    { time: '20s', value: 0.29 }, { time: '25s', value: 0.12 },
-    { time: '30s', value: 0.30 },
-  ]
-  const blinkHistory = [
-    { session: 'S1', blinks: 12 }, { session: 'S2', blinks: 15 },
-    { session: 'S3', blinks: 18 }, { session: 'S4', blinks: 14 },
-    { session: 'Current', blinks: detectionResults.blinkRate },
-  ]
-  const conditionDistribution = [
-    { name: 'Wet (Normal)', value: 65, color: '#00D4AA' },
-    { name: 'Dry', value: 35, color: '#f59e0b' },
-  ]
-
-  // Dummy Session History Table Data
-  const sessionHistory = Array.from({ length: 12 }).map((_, i) => ({
-    id: `SES-${8012 - i}`,
-    date: new Date(Date.now() - i * 86400000).toLocaleDateString(),
-    time: new Date(Date.now() - i * 86400000).toLocaleTimeString(),
-    condition: i === 0 ? detectionResults.condition : (Math.random() > 0.5 ? 'Wet' : 'Dry'),
-    blinkRate: i === 0 ? detectionResults.blinkRate : Math.floor(Math.random() * 10 + 10),
-    earAvg: (0.2 + Math.random() * 0.1).toFixed(3)
-  }))
-
-  const paginatedSessions = sessionHistory.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-  const totalPages = Math.ceil(sessionHistory.length / rowsPerPage)
-
-  return (
-    <div className="w-full flex flex-col flex-1 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto w-full">
-
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 animate-slide-up">
-          <div>
-            <h1 className="text-4xl sm:text-5xl lg:text-5xl font-bold text-white mb-3">Optical Health Report</h1>
-            <p className="text-base sm:text-lg text-[#9CA3AF] leading-relaxed">Aggregated analytics and AI insights from your sessions.</p>
-          </div>
-          <div className="flex gap-3 w-full md:w-auto">
-            <button className="btn-outline border-[#2E3E56] text-[#9CA3AF] hover:text-white bg-[#1B263B] flex-1 md:flex-none text-sm py-2.5">
-              <Download className="w-4 h-4" /> CSV
-            </button>
-            <button className="btn-primary bg-[#7F77DD] hover:bg-[#6c64ce] flex-1 md:flex-none text-sm py-2.5">
-              <Download className="w-4 h-4" /> PDF Report
-            </button>
+        {/* Condition hero card */}
+        <div style={{
+          borderRadius: '20px', padding: '28px 32px', marginBottom: '24px', position: 'relative', overflow: 'hidden',
+          ...(isDry
+            ? { background: 'linear-gradient(135deg,#FFFBEB,#FEF3C7)', border: '1.5px solid #FDE68A' }
+            : { background: 'linear-gradient(135deg,#EFF6FF,#DBEAFE)', border: '1.5px solid #BFDBFE' }),
+        }} className="animate-fade-up">
+          <div style={{ position: 'absolute', right: '-20px', top: '-20px', width: '160px', height: '160px', borderRadius: '50%', background: isDry ? 'rgba(253,230,138,0.4)' : 'rgba(191,219,254,0.4)' }} />
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+            <div style={{
+              width: '72px', height: '72px', borderRadius: '18px', flexShrink: 0,
+              background: isDry ? 'rgba(245,158,11,0.15)' : 'rgba(37,99,235,0.1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: `2px solid ${isDry ? '#FDE68A' : '#BFDBFE'}`,
+            }}>
+              {isDry ? <Sun size={32} color="#D97706" /> : <Droplets size={32} color="#2563EB" />}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: isDry ? '#92400E' : '#1E40AF', letterSpacing: '0.06em', fontFamily: "'Plus Jakarta Sans',sans-serif", marginBottom: '4px' }}>
+                DETECTED CONDITION
+              </div>
+              <h2 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 800, color: isDry ? '#D97706' : '#1D4ED8', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+                {detectionResults.condition} Eye Detection
+              </h2>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <span className="badge" style={{ background: isDry ? '#FFFBEB' : '#EFF6FF', color: isDry ? '#92400E' : '#1E40AF', border: `1px solid ${isDry ? '#FDE68A' : '#BFDBFE'}`, fontSize: '0.72rem' }}>
+                  <CheckCircle2 size={11} /> {detectionResults.accuracy}% confidence
+                </span>
+                <span className="badge badge-blue">
+                  <Clock size={11} /> {new Date(detectionResults.timestamp).toLocaleTimeString()}
+                </span>
+                <span className="badge badge-blue">
+                  <Calendar size={11} /> {new Date(detectionResults.timestamp).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Top Section: Health Score & AI Insights */}
-        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
-
-          {/* Health Score Gauge */}
-          <div className="glass-card p-8 flex flex-col items-center justify-center animate-slide-up text-center">
-            <h2 className="text-lg font-bold text-white mb-6">Overall Optical Health</h2>
-            <div className="relative w-48 h-48 mb-4">
-              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#2E3E56" strokeWidth="8" />
-                <circle cx="50" cy="50" r="45" fill="none" stroke={gaugeColor} strokeWidth="8"
-                  strokeDasharray={`${(computedScore / 100) * 283} 283`} strokeLinecap="round" className="transition-all duration-1000" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-5xl font-black" style={{ color: gaugeColor }}>{computedScore}</span>
-                <span className="text-xs font-bold text-[#9CA3AF] uppercase tracking-widest mt-1">Score</span>
+        {/* Metrics row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px', marginBottom: '24px' }}>
+          {metrics.map((m, i) => (
+            <div key={i} className="metric-card animate-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <div className={`icon-box ${m.iconCls}`} style={{ width: '34px', height: '34px', borderRadius: '9px' }}>{m.icon}</div>
+                {m.badge && <span className={`badge ${m.badge.cls}`}>{m.badge.text}</span>}
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 600, letterSpacing: '0.06em', marginBottom: '5px', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+                {m.label.toUpperCase()}
+              </div>
+              <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {m.value}
               </div>
             </div>
-            <div className="px-4 py-1 rounded-full border text-sm font-bold uppercase tracking-wider"
-              style={{ backgroundColor: `${gaugeColor}15`, borderColor: `${gaugeColor}40`, color: gaugeColor }}>
-              {riskLevel} RISK
+          ))}
+        </div>
+
+        {/* Charts + AI */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+
+          {/* EAR Chart */}
+          <div className="card animate-fade-up" style={{ padding: '22px', animationDelay: '0.2s' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+              <div className="icon-box icon-box-blue" style={{ width: '32px', height: '32px', borderRadius: '8px' }}>
+                <Activity size={16} />
+              </div>
+              <div>
+                <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, color: '#0F172A', fontSize: '0.9rem' }}>EAR Trend</div>
+                <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Eye Aspect Ratio over 30s session</div>
+              </div>
             </div>
+            <div style={{ height: '220px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={earData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+                  <defs>
+                    <linearGradient id="earGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2563EB" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                  <XAxis dataKey="time" stroke="#CBD5E1" fontSize={11} tick={{ fontFamily: 'DM Sans' }} />
+                  <YAxis stroke="#CBD5E1" fontSize={11} domain={[0, 0.4]} tick={{ fontFamily: 'DM Sans' }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area type="monotone" dataKey="EAR" stroke="#2563EB" strokeWidth={2} fill="url(#earGrad)" dot={{ r: 3, fill: '#2563EB', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <p style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '10px', textAlign: 'center' }}>
+              ↓ Dips in the graph indicate detected blinks
+            </p>
           </div>
 
-          {/* 4 Summary Stats */}
-          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 animate-slide-up delay-100">
-            {[
-              { label: 'Total Sessions', val: '12', trend: '+2', chart: earData, key: 'value', color: '#7F77DD' },
-              { label: 'Avg Blink Rate', val: `${detectionResults.blinkRate}/m`, trend: 'Normal', chart: blinkHistory, key: 'blinks', color: '#00D4AA' },
-              { label: 'Avg EAR Score', val: detectionResults.earAvg.toFixed(3), trend: '-0.02', chart: earData, key: 'value', color: '#f59e0b' },
-              { label: 'Total Track Time', val: '6.0m', trend: '+30s', chart: blinkHistory, key: 'blinks', color: '#3B82F6' }
-            ].map((stat, i) => (
-              <div key={i} className="glass-card p-5 flex flex-col justify-between">
-                <div className="flex justify-between items-start">
-                  <span className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">{stat.label}</span>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#1B263B] text-white">{stat.trend}</span>
-                </div>
-                <div className="flex items-end justify-between mt-4">
-                  <span className="text-2xl font-bold text-white">{stat.val}</span>
-                  <div className="w-1/2 h-10 opacity-60">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={stat.chart}>
-                        <Area type="monotone" dataKey={stat.key} stroke={stat.color} fill={stat.color} fillOpacity={0.2} strokeWidth={2} />
-                      </AreaChart>
-                    </ResponsiveContainer>
+          {/* AI Assessment */}
+          <div className="card animate-fade-up" style={{ padding: '22px', animationDelay: '0.3s' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div className="icon-box icon-box-purple" style={{ width: '32px', height: '32px', borderRadius: '8px' }}>
+                <Brain size={16} />
+              </div>
+              <div>
+                <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, color: '#0F172A', fontSize: '0.9rem' }}>AI Assessment</div>
+                <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>LLM-generated explanation</div>
+              </div>
+              <div style={{ marginLeft: 'auto' }}>
+                <span className="badge" style={{ background: '#FAF5FF', color: '#7C3AED', border: '1px solid #EDE9FE', fontSize: '0.7rem' }}>
+                  <Sparkles size={10} /> Puter.js
+                </span>
+              </div>
+            </div>
+
+            <div style={{ maxHeight: '260px', overflowY: 'auto', padding: '14px', background: '#F8FAFF', borderRadius: '10px', border: '1px solid #EEF2FF' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', padding: '8px 10px', background: isDry ? '#FFFBEB' : '#EFF6FF', borderRadius: '8px', border: `1px solid ${isDry ? '#FDE68A' : '#DBEAFE'}` }}>
+                <AlertTriangle size={14} color={isDry ? '#D97706' : '#2563EB'} />
+                <span style={{ fontSize: '0.78rem', fontWeight: 600, color: isDry ? '#92400E' : '#1E40AF', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+                  {detectionResults.condition} Eye — AI Explanation
+                </span>
+              </div>
+              <div className="ai-prose" style={{ whiteSpace: 'pre-wrap' }}>
+                {detectionResults.aiExplanation || 'Based on your clinical parameters, your eye condition has been classified. The analysis indicates potential tear film instability. Recommendations include the 20-20-20 rule and adequate hydration.'}
+              </div>
+              <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '12px', marginTop: '14px' }}>
+                <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, color: '#0F172A', fontSize: '0.82rem', marginBottom: '8px' }}>Professional Guidance</div>
+                {[
+                  'Maintain ambient humidity if working in AC environments.',
+                  'Consult an eye care professional if symptoms persist.',
+                ].map((rec, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                    <CheckCircle2 size={14} color="#10B981" style={{ flexShrink: 0, marginTop: '1px' }} />
+                    <span style={{ fontSize: '0.8rem', color: '#475569', lineHeight: 1.5 }}>{rec}</span>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-        </div>
-
-        {/* AI Recommendations */}
-        <div className="mb-12 animate-slide-up delay-200">
-          <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-            <Brain className="w-6 h-6 text-[#7F77DD] flex-shrink-0" /> AI Clinical Insights
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-            <div className="glass-card p-6 border-l-4 border-l-[#f59e0b] flex flex-col">
-              <h3 className="font-bold text-white mb-2">Blink Behavior</h3>
-              <p className="text-sm text-[#9CA3AF] leading-relaxed">
-                Your blink rate indicates potential digital eye strain. Conscious blinking exercises recommended.
-              </p>
-            </div>
-            <div className="glass-card p-6 border-l-4 border-l-[#00D4AA] flex flex-col">
-              <h3 className="font-bold text-white mb-2">Tear Film Stability</h3>
-              <p className="text-sm text-[#9CA3AF] leading-relaxed">
-                Based on EAR variance, tear film integrity is moderate. Consider 20-20-20 rule implementation.
-              </p>
-            </div>
-            <div className="glass-card p-6 border-l-4 border-l-[#7F77DD] flex flex-col">
-              <h3 className="font-bold text-white mb-2">Ocular Motility</h3>
-              <p className="text-sm text-[#9CA3AF] leading-relaxed">
-                Tracking vectors show healthy eye muscle coordination with no fixation anomalies detected.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Charts Row */}
-        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 mb-12 animate-slide-up delay-300">
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-bold text-white mb-6">EAR Value Fluctuations</h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={earData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2E3E56" vertical={false} />
-                  <XAxis dataKey="time" stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#9CA3AF" fontSize={12} domain={[0, 0.4]} tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: '#0D1B2A', borderColor: '#2E3E56', borderRadius: '8px' }} />
-                  <Line type="monotone" dataKey="value" name="EAR Value" stroke="#00D4AA" strokeWidth={3} dot={{ fill: '#00D4AA', r: 4 }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-bold text-white mb-6">Blink Count per Session</h3>
-            <div className="h-64 flex-1">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={blinkHistory} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2E3E56" vertical={false} />
-                  <XAxis dataKey="session" stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: '#0D1B2A', borderColor: '#2E3E56', borderRadius: '8px' }} cursor={{ fill: '#1B263B' }} />
-                  <Bar dataKey="blinks" name="Blinks" radius={[4, 4, 0, 0]}>
-                    {blinkHistory.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={index === blinkHistory.length - 1 ? '#00D4AA' : '#7F77DD'} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="glass-card p-6 flex flex-col">
-            <h3 className="text-lg font-bold text-white mb-6">Condition Mapping</h3>
-            <div className="h-64 flex-1">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={conditionDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                    {conditionDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: '#0D1B2A', borderColor: '#2E3E56', borderRadius: '8px' }} />
-                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ color: '#9CA3AF', paddingTop: '10px' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        {/* Session History Table */}
-        <div className="glass-card p-6 lg:p-8 mb-12 animate-slide-up delay-300">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <h3 className="text-xl font-bold text-white">Full Session History</h3>
-            <div className="relative w-full sm:w-auto">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
-              <input type="text" placeholder="Search sessions..." className="w-full sm:w-64 bg-[#0D1B2A] border border-[#2E3E56] rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-[#00D4AA]" />
-            </div>
-          </div>
-
-          <div className="overflow-x-auto rounded-lg">
-            <table className="w-full text-left border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-[#2E3E56] bg-[#0D1B2A]">
-                  <th className="py-4 px-4 text-xs font-bold text-[#9CA3AF] uppercase tracking-wider whitespace-nowrap">Session ID</th>
-                  <th className="py-4 px-4 text-xs font-bold text-[#9CA3AF] uppercase tracking-wider whitespace-nowrap">Date & Time</th>
-                  <th className="py-4 px-4 text-xs font-bold text-[#9CA3AF] uppercase tracking-wider whitespace-nowrap">Condition</th>
-                  <th className="py-4 px-4 text-xs font-bold text-[#9CA3AF] uppercase tracking-wider text-right whitespace-nowrap">Blinks/min</th>
-                  <th className="py-4 px-4 text-xs font-bold text-[#9CA3AF] uppercase tracking-wider text-right whitespace-nowrap">Avg EAR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedSessions.map((session, i) => (
-                  <tr key={session.id} className="border-b border-[#2E3E56]/50 hover:bg-[#1B263B]/50 transition-colors cursor-pointer">
-                    <td className="py-4 px-4 font-bold text-white whitespace-nowrap">{session.id}</td>
-                    <td className="py-4 px-4 text-[#9CA3AF] whitespace-nowrap">{session.date} - {session.time}</td>
-                    <td className="py-4 px-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap ${session.condition === 'Wet' ? 'bg-[#00D4AA]/10 text-[#00D4AA]' : 'bg-[#f59e0b]/10 text-[#f59e0b]'}`}>
-                        {session.condition === 'Wet' ? <Droplets className="w-3 h-3" /> : <Sun className="w-3 h-3" />}
-                        {session.condition}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 font-bold text-white text-right whitespace-nowrap">{session.blinkRate}</td>
-                    <td className="py-4 px-4 font-bold text-white text-right whitespace-nowrap">{session.earAvg}</td>
-                  </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-8 pt-6 border-t border-[#2E3E56]">
-            <span className="text-xs sm:text-sm text-[#9CA3AF]">
-              Showing <span className="font-bold text-white">{(currentPage - 1) * rowsPerPage + 1}</span> to <span className="font-bold text-white">{Math.min(currentPage * rowsPerPage, sessionHistory.length)}</span> of <span className="font-bold text-white">{sessionHistory.length}</span> results
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="w-8 h-8 rounded bg-[#1B263B] border border-[#2E3E56] flex items-center justify-center text-[#9CA3AF] hover:text-white hover:border-[#00D4AA] disabled:opacity-50 disabled:hover:border-[#2E3E56] transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="w-8 h-8 rounded bg-[#1B263B] border border-[#2E3E56] flex items-center justify-center text-[#9CA3AF] hover:text-white hover:border-[#00D4AA] disabled:opacity-50 disabled:hover:border-[#2E3E56] transition-colors"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              </div>
             </div>
           </div>
-
         </div>
 
+        {/* Footer */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', paddingTop: '20px', borderTop: '1px solid #E2E8F0' }}>
+          <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748B', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 500 }}>
+            <ArrowLeft size={15} /> Back to Dashboard
+          </Link>
+          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
+            Kings Engineering College © 2026 — Biomedical Engineering Dept.
+          </span>
+        </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          div[style*="gridTemplateColumns: '1fr 1fr'"] { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   )
 }

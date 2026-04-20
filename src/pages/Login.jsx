@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../App'
-import { LogIn, Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle, Zap, Shield, Cpu } from 'lucide-react'
+import { LogIn, Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle, Zap, Shield, Cpu, ScanEye, Activity, Brain } from 'lucide-react'
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '', rememberMe: false })
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
@@ -14,88 +14,87 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
-    setSuccess('')
-
-    if (!form.email || !form.password) {
-      setError('All fields are required')
-      return
-    }
-
-    if (!form.email.includes('@')) {
-      setError('Please enter a valid email address')
-      return
-    }
-
+    setError(''); setSuccess('')
+    if (!form.email || !form.password) { setError('All fields are required'); return }
+    if (!form.email.includes('@')) { setError('Please enter a valid email address'); return }
     setLoading(true)
     setTimeout(() => {
-      login({ username: form.email.split('@')[0] || 'User', email: form.email })
+      login({ username: form.email.split('@')[0], email: form.email })
       setSuccess('Login successful! Redirecting...')
       setTimeout(() => navigate('/dashboard'), 500)
       setLoading(false)
     }, 1000)
   }
 
-  const features = [
-    { icon: <Cpu className="w-5 h-5" />, text: 'AI-Powered Detection' },
-    { icon: <Shield className="w-5 h-5" />, text: 'Secure & Private' },
-    { icon: <Zap className="w-5 h-5" />, text: 'Real-time Analysis' }
+  const highlights = [
+    { icon: <ScanEye size={18} />, title: 'Wet & Dry Eye Detection', desc: '95%+ accuracy using EAR analysis' },
+    { icon: <Activity size={18} />, title: 'Real-Time Movement Tracking', desc: 'Left, right, up, down, center' },
+    { icon: <Brain size={18} />, title: 'LLM-Powered Health Insights', desc: 'AI explanations and recommendations' },
   ]
 
   return (
-    <div className="min-h-[calc(100vh-64px)] grid grid-cols-1 lg:grid-cols-2 gap-0">
-      {/* Left Section - Form */}
-      <div className="flex items-center justify-center px-6 py-12 lg:px-12">
-        <div className="w-full max-w-md animate-slide-in-right">
-          {/* Logo & Branding */}
-          <div className="mb-10">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-teal-500">
-                <LogIn className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold gradient-text">EyeDetect AI</span>
+    <div style={{ minHeight: 'calc(100vh - 64px)', display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+
+      {/* ─── Left: Form ─── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '48px 40px', background: '#fff',
+        borderRight: '1px solid #EEF2FF',
+      }}>
+        <div style={{ width: '100%', maxWidth: '420px' }} className="animate-fade-up">
+
+          <div style={{ marginBottom: '36px' }}>
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '14px',
+              background: 'linear-gradient(135deg, #2563EB, #0EA5E9)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: '20px', boxShadow: '0 8px 20px rgba(37,99,235,0.25)',
+            }}>
+              <LogIn size={22} color="white" />
             </div>
-            <p className="text-slate-400 text-sm">Advanced eye detection technology</p>
+            <h1 style={{
+              fontFamily: "'Plus Jakarta Sans',sans-serif",
+              fontSize: '1.8rem', fontWeight: 800,
+              color: '#0F172A', letterSpacing: '-0.02em', marginBottom: '8px',
+            }}>Welcome back</h1>
+            <p style={{ color: '#64748B', fontSize: '0.9rem' }}>Sign in to continue to your account</p>
           </div>
 
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
-            <p className="text-slate-400">Sign in to access your account and continue using our platform</p>
-          </div>
-
-          {/* Error Message */}
+          {/* Alerts */}
           {error && (
-            <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 backdrop-blur-sm animate-slide-up">
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-white text-xs font-bold">!</span>
-                </div>
-                <span className="text-red-400 text-sm font-medium">{error}</span>
+            <div style={{
+              padding: '12px 16px', borderRadius: '10px',
+              background: '#FEF2F2', border: '1px solid #FECACA',
+              color: '#DC2626', fontSize: '0.875rem', marginBottom: '20px',
+              display: 'flex', alignItems: 'center', gap: '8px',
+            }}>
+              <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ color: 'white', fontSize: '0.65rem', fontWeight: 700 }}>!</span>
               </div>
+              {error}
             </div>
           )}
-
-          {/* Success Message */}
           {success && (
-            <div className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30 backdrop-blur-sm animate-slide-up">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                <span className="text-green-400 text-sm font-medium">{success}</span>
-              </div>
+            <div style={{
+              padding: '12px 16px', borderRadius: '10px',
+              background: '#ECFDF5', border: '1px solid #A7F3D0',
+              color: '#059669', fontSize: '0.875rem', marginBottom: '20px',
+              display: 'flex', alignItems: 'center', gap: '8px',
+            }}>
+              <CheckCircle size={16} /> {success}
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5 mb-6">
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2.5">Email Address</label>
-              <div className="relative group">
-                <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
+          <form onSubmit={handleSubmit}>
+            {/* Email */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '8px', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+                Email address
+              </label>
+              <div style={{ position: 'relative' }}>
+                <Mail size={16} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', pointerEvents: 'none' }} />
                 <input
-                  type="email"
-                  className="input-field pl-4 pr-11"
+                  type="email" className="input-field" style={{ paddingRight: '40px' }}
                   placeholder="you@example.com"
                   value={form.email}
                   onChange={e => setForm({ ...form, email: e.target.value })}
@@ -104,136 +103,132 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Password Field */}
-            <div>
-              <div className="flex items-center justify-between mb-2.5">
-                <label className="block text-sm font-semibold text-slate-300">Password</label>
-                <Link to="#" className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors">
-                  Forgot password?
-                </Link>
+            {/* Password */}
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>Password</label>
+                <Link to="#" style={{ fontSize: '0.8rem', color: '#2563EB', textDecoration: 'none', fontWeight: 500 }}>Forgot?</Link>
               </div>
-              <div className="relative group">
-                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
+              <div style={{ position: 'relative' }}>
+                <Lock size={16} style={{ position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', pointerEvents: 'none' }} />
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  className="input-field pl-4 pr-12"
+                  type={showPw ? 'text' : 'password'} className="input-field" style={{ paddingRight: '70px' }}
                   placeholder="••••••••"
                   value={form.password}
                   onChange={e => setForm({ ...form, password: e.target.value })}
                   disabled={loading}
                 />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                  disabled={loading}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                <button type="button" onClick={() => setShowPw(!showPw)} style={{
+                  position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: '2px',
+                }}>
+                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
-            {/* Remember Me */}
-            <label className="flex items-center gap-3 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={form.rememberMe}
-                onChange={e => setForm({ ...form, rememberMe: e.target.checked })}
-                className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500 transition-colors cursor-pointer"
-                disabled={loading}
-              />
-              <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors font-medium">Keep me signed in</span>
+            {/* Remember me */}
+            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', cursor: 'pointer' }}>
+              <input type="checkbox" checked={form.rememberMe} onChange={e => setForm({ ...form, rememberMe: e.target.checked })} style={{ width: '16px', height: '16px', accentColor: '#2563EB' }} disabled={loading} />
+              <span style={{ fontSize: '0.875rem', color: '#64748B' }}>Keep me signed in</span>
             </label>
 
-            {/* Submit Button */}
-            <button 
-              type="submit" 
-              className="btn-primary w-full justify-center mt-8 disabled:opacity-50 disabled:cursor-not-allowed" 
-              disabled={loading}
-            >
+            <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: '0.95rem' }} disabled={loading}>
               {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Signing in...</span>
-                </div>
-              ) : (
-                <>Sign In <ArrowRight className="w-5 h-5 ml-1" /></>
-              )}
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin-slow 0.7s linear infinite' }} />
+                  Signing in…
+                </span>
+              ) : (<>Sign In <ArrowRight size={16} /></>)}
             </button>
           </form>
 
-          {/* Demo Credentials */}
-          <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/20 backdrop-blur-sm mb-6">
-            <div className="flex items-start gap-2">
-              <CheckCircle className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
-              <div className="text-xs text-blue-300 leading-relaxed">
-                <p className="font-semibold mb-1">Demo Credentials:</p>
-                <p>Enter any email & password to test the platform</p>
-              </div>
+          {/* Demo hint */}
+          <div style={{
+            marginTop: '20px', padding: '12px 14px', borderRadius: '10px',
+            background: '#EFF6FF', border: '1px solid #BFDBFE',
+            display: 'flex', gap: '8px',
+          }}>
+            <CheckCircle size={15} color="#2563EB" style={{ flexShrink: 0, marginTop: '1px' }} />
+            <div style={{ fontSize: '0.8rem', color: '#1E40AF' }}>
+              <strong>Demo:</strong> Enter any email & password to test the platform.
             </div>
           </div>
 
-          {/* Sign Up Link */}
-          <div className="text-center text-sm text-slate-400">
+          <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '0.875rem', color: '#64748B' }}>
             Don't have an account?{' '}
-            <Link to="/register" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
-              Create one now
-            </Link>
-          </div>
+            <Link to="/register" style={{ color: '#2563EB', fontWeight: 600, textDecoration: 'none' }}>Create one free</Link>
+          </p>
         </div>
       </div>
 
-      {/* Right Section - Branding & Features */}
-      <div className="hidden lg:flex flex-col items-start justify-center px-12 py-12 relative overflow-hidden">
-        {/* Background gradient effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-teal-500/10 pointer-events-none" />
-        
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-blue-500/5 blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-teal-500/5 blur-3xl" />
+      {/* ─── Right: Branding ─── */}
+      <div style={{
+        background: 'linear-gradient(145deg, #1E3A8A 0%, #1D4ED8 50%, #0369A1 100%)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', padding: '60px 48px',
+        position: 'relative', overflow: 'hidden',
+      }} className="hide-on-mobile">
+        {/* Decorative circles */}
+        <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '280px', height: '280px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} />
+        <div style={{ position: 'absolute', bottom: '-80px', left: '-40px', width: '240px', height: '240px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)' }} />
 
-        <div className="relative z-10 max-w-lg">
-          {/* Main Heading */}
-          <div className="mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              <span className="text-slate-100">Intelligent Eye</span>
-              <br />
-              <span className="gradient-text text-5xl">Detection Technology</span>
+        <div style={{ position: 'relative', maxWidth: '420px', width: '100%' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#93C5FD', letterSpacing: '0.1em', marginBottom: '12px', fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+              TRUSTED PLATFORM
+            </div>
+            <h2 style={{
+              fontFamily: "'Plus Jakarta Sans',sans-serif",
+              fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800,
+              color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.15,
+              marginBottom: '14px',
+            }}>
+              AI-powered eye<br />health in your browser
             </h2>
-            <p className="text-slate-400 text-lg leading-relaxed">
-              Experience advanced AI-powered eye detection that works in real-time to provide accurate and reliable results.
+            <p style={{ color: '#93C5FD', fontSize: '0.95rem', lineHeight: 1.6 }}>
+              Advanced real-time detection using computer vision and large language models — no downloads required.
             </p>
           </div>
 
-          {/* Features List */}
-          <div className="space-y-4 mb-12">
-            {features.map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-4 group cursor-pointer">
-                <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:border-blue-500/40 transition-all">
-                  <div className="text-blue-400">{feature.icon}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '40px' }}>
+            {highlights.map((h, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'flex-start', gap: '14px',
+                padding: '16px', borderRadius: '12px',
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.1)',
+              }}>
+                <div style={{
+                  width: '36px', height: '36px', borderRadius: '9px', flexShrink: 0,
+                  background: 'rgba(255,255,255,0.12)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#93C5FD',
+                }}>
+                  {h.icon}
                 </div>
-                <span className="text-slate-300 font-medium group-hover:text-slate-100 transition-colors">{feature.text}</span>
+                <div>
+                  <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, color: '#fff', fontSize: '0.875rem', marginBottom: '3px' }}>{h.title}</div>
+                  <div style={{ fontSize: '0.78rem', color: '#93C5FD' }}>{h.desc}</div>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Stats Section */}
-          <div className="grid grid-cols-3 gap-4 pt-8 border-t border-slate-700/50">
-            <div>
-              <div className="text-2xl font-bold gradient-text mb-1">99.9%</div>
-              <p className="text-xs text-slate-400 font-medium">Accuracy</p>
-            </div>
-            <div>
-              <div className="text-2xl font-bold gradient-text mb-1">1M+</div>
-              <p className="text-xs text-slate-400 font-medium">Detections</p>
-            </div>
-            <div>
-              <div className="text-2xl font-bold gradient-text mb-1">24/7</div>
-              <p className="text-xs text-slate-400 font-medium">Available</p>
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            {[{ val: '95%+', lbl: 'Accuracy' }, { val: '< 1s', lbl: 'Response' }, { val: '24/7', lbl: 'Available' }].map((s, i) => (
+              <div key={i} style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '1.4rem', fontWeight: 800, color: '#fff' }}>{s.val}</div>
+                <div style={{ fontSize: '0.75rem', color: '#93C5FD', marginTop: '2px' }}>{s.lbl}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) { .hide-on-mobile { display: none !important; } }
+        @media (max-width: 768px) { div[style*="gridTemplateColumns: '1fr 1fr'"] { grid-template-columns: 1fr !important; } }
+      `}</style>
     </div>
   )
 }
