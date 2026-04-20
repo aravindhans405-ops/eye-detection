@@ -50,7 +50,7 @@ export default function Login() {
           {/* Logo & Branding */}
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 to-cyan-500">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-teal-500">
                 <LogIn className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold gradient-text">EyeDetect AI</span>
@@ -92,7 +92,7 @@ export default function Login() {
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2.5">Email Address</label>
               <div className="relative group">
-                <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors pointer-events-none" />
+                <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                 <input
                   type="email"
                   className="input-field pl-4 pr-11"
@@ -108,12 +108,12 @@ export default function Login() {
             <div>
               <div className="flex items-center justify-between mb-2.5">
                 <label className="block text-sm font-semibold text-slate-300">Password</label>
-                <Link to="#" className="text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+                <Link to="#" className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors">
                   Forgot password?
                 </Link>
               </div>
               <div className="relative group">
-                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors pointer-events-none" />
+                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   className="input-field pl-4 pr-12"
@@ -139,7 +139,7 @@ export default function Login() {
                 type="checkbox"
                 checked={form.rememberMe}
                 onChange={e => setForm({ ...form, rememberMe: e.target.checked })}
-                className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-indigo-500 focus:ring-indigo-500 transition-colors cursor-pointer"
+                className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500 transition-colors cursor-pointer"
                 disabled={loading}
               />
               <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors font-medium">Keep me signed in</span>
@@ -163,10 +163,10 @@ export default function Login() {
           </form>
 
           {/* Demo Credentials */}
-          <div className="p-4 rounded-lg bg-indigo-500/5 border border-indigo-500/20 backdrop-blur-sm mb-6">
+          <div className="p-4 rounded-lg bg-blue-500/5 border border-blue-500/20 backdrop-blur-sm mb-6">
             <div className="flex items-start gap-2">
-              <CheckCircle className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
-              <div className="text-xs text-indigo-300 leading-relaxed">
+              <CheckCircle className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+              <div className="text-xs text-blue-300 leading-relaxed">
                 <p className="font-semibold mb-1">Demo Credentials:</p>
                 <p>Enter any email & password to test the platform</p>
               </div>
@@ -176,7 +176,7 @@ export default function Login() {
           {/* Sign Up Link */}
           <div className="text-center text-sm text-slate-400">
             Don't have an account?{' '}
-            <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
+            <Link to="/register" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
               Create one now
             </Link>
           </div>
@@ -186,11 +186,11 @@ export default function Login() {
       {/* Right Section - Branding & Features */}
       <div className="hidden lg:flex flex-col items-start justify-center px-12 py-12 relative overflow-hidden">
         {/* Background gradient effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-teal-500/10 pointer-events-none" />
         
         {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-indigo-500/5 blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-cyan-500/5 blur-3xl" />
+        <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-blue-500/5 blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-teal-500/5 blur-3xl" />
 
         <div className="relative z-10 max-w-lg">
           {/* Main Heading */}
@@ -209,8 +209,8 @@ export default function Login() {
           <div className="space-y-4 mb-12">
             {features.map((feature, idx) => (
               <div key={idx} className="flex items-center gap-4 group cursor-pointer">
-                <div className="w-12 h-12 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center group-hover:bg-indigo-500/20 group-hover:border-indigo-500/40 transition-all">
-                  <div className="text-indigo-400">{feature.icon}</div>
+                <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:border-blue-500/40 transition-all">
+                  <div className="text-blue-400">{feature.icon}</div>
                 </div>
                 <span className="text-slate-300 font-medium group-hover:text-slate-100 transition-colors">{feature.text}</span>
               </div>

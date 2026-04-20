@@ -88,7 +88,7 @@ export default function Register() {
           {/* Logo & Branding */}
           <div className="mb-10">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-purple-500 to-teal-500">
                 <UserPlus className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold gradient-text-2">EyeDetect AI</span>
@@ -128,7 +128,7 @@ export default function Register() {
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2.5">Username</label>
               <div className="relative group">
-                <User className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors pointer-events-none" />
+                <User className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                 <input
                   type="text"
                   className="input-field pl-4 pr-11"
@@ -144,7 +144,7 @@ export default function Register() {
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2.5">Email Address</label>
               <div className="relative group">
-                <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors pointer-events-none" />
+                <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                 <input
                   type="email"
                   className="input-field pl-4 pr-11"
@@ -160,7 +160,7 @@ export default function Register() {
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2.5">Password</label>
               <div className="relative group">
-                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors pointer-events-none" />
+                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   className="input-field pl-4 pr-12"
@@ -208,7 +208,7 @@ export default function Register() {
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-2.5">Confirm Password</label>
               <div className="relative group">
-                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-purple-400 transition-colors pointer-events-none" />
+                <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors pointer-events-none" />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   className="input-field pl-4 pr-12"
@@ -239,11 +239,11 @@ export default function Register() {
                 type="checkbox"
                 checked={form.agreeToTerms}
                 onChange={e => setForm({ ...form, agreeToTerms: e.target.checked })}
-                className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-purple-500 focus:ring-purple-500 transition-colors mt-1 flex-shrink-0 cursor-pointer"
+                className="w-5 h-5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500 transition-colors mt-1 flex-shrink-0 cursor-pointer"
                 disabled={loading}
               />
               <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">
-                I agree to the <Link to="#" className="text-purple-400 hover:text-purple-300 font-medium">Terms & Conditions</Link> and <Link to="#" className="text-purple-400 hover:text-purple-300 font-medium">Privacy Policy</Link>
+                I agree to the <Link to="#" className="text-blue-400 hover:text-blue-300 font-medium">Terms & Conditions</Link> and <Link to="#" className="text-blue-400 hover:text-blue-300 font-medium">Privacy Policy</Link>
               </span>
             </label>
 
@@ -267,7 +267,7 @@ export default function Register() {
           {/* Sign In Link */}
           <div className="mt-6 text-center text-sm text-slate-400">
             Already have an account?{' '}
-            <Link to="/login" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+            <Link to="/login" className="text-blue-400 hover:text-blue-300 font-semibold transition-colors">
               Sign In
             </Link>
           </div>
@@ -277,10 +277,10 @@ export default function Register() {
       {/* Right Section - Branding & Features */}
       <div className="hidden lg:flex flex-col items-start justify-center px-12 py-12 relative overflow-hidden">
         {/* Background gradient effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-teal-500/10 pointer-events-none" />
         
         {/* Decorative elements */}
-        <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-purple-500/5 blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 rounded-full bg-blue-500/5 blur-3xl" />
         <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-pink-500/5 blur-3xl" />
 
         <div className="relative z-10 max-w-lg">
@@ -300,8 +300,8 @@ export default function Register() {
           <div className="space-y-4 mb-12">
             {features.map((feature, idx) => (
               <div key={idx} className="flex items-center gap-4 group cursor-pointer">
-                <div className="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/20 group-hover:border-purple-500/40 transition-all">
-                  <div className="text-purple-400">{feature.icon}</div>
+                <div className="w-12 h-12 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:border-blue-500/40 transition-all">
+                  <div className="text-blue-400">{feature.icon}</div>
                 </div>
                 <span className="text-slate-300 font-medium group-hover:text-slate-100 transition-colors">{feature.text}</span>
               </div>
@@ -314,7 +314,7 @@ export default function Register() {
               "The eye detection technology is incredibly accurate. Our team uses it daily for research and it hasn't let us down."
             </p>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-teal-500" />
               <div>
                 <p className="text-sm font-semibold text-slate-100">Sarah Johnson</p>
                 <p className="text-xs text-slate-400">Research Lead</p>
