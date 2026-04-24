@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Play, Sparkles, Activity, FileText, Loader2, Download, X } from "lucide-react";
 import { RequireAuth } from "@/components/require-auth";
@@ -24,6 +24,10 @@ export const Route = createFileRoute("/detection")({
 function DetectionPage() {
   const { scanning, result, start, reset } = useScan();
   const [showRecovery, setShowRecovery] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
 
   const severityColor =
     result?.severity === "Healthy"
@@ -36,6 +40,51 @@ function DetectionPage() {
 
   const recoverySteps = result?.condition === "WET EYE" ? WET_RECOVERY : DRY_RECOVERY;
 
+  useEffect(() => {
+    let mounted = true;
+    let stream: MediaStream | null = null;
+
+    async function openCamera() {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setCameraError("Camera not supported in this browser.");
+        return;
+      }
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false,
+        });
+
+        if (!mounted) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+
+        setCameraStream(stream);
+        setCameraReady(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play().catch(() => {
+            /* ignore play promise issues */
+          });
+        }
+      } catch (error) {
+        setCameraError(
+          error instanceof Error ? error.message : "Unable to access camera."
+        );
+        setCameraReady(false);
+      }
+    }
+
+    openCamera();
+
+    return () => {
+      mounted = false;
+      stream?.getTracks().forEach((track) => track.stop());
+    };
+  }, []);
+
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
@@ -46,9 +95,28 @@ function DetectionPage() {
       {/* Camera box */}
       <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-navy shadow-card">
         <div className="absolute inset-0 dot-grid opacity-20" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Camera className="h-20 w-20 text-white/20" />
-        </div>
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          playsInline
+        />
+
+        {!cameraReady && !cameraError && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Camera className="h-20 w-20 text-white/20" />
+          </div>
+        )}
+
+        {cameraError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/70 px-6 text-center text-sm text-white">
+            <Camera className="h-16 w-16 text-white/70" />
+            <p>Camera unavailable</p>
+            <p className="text-xs text-muted-foreground">{cameraError}</p>
+          </div>
+        )}
+
         {/* scan overlay */}
         {scanning && (
           <div className="absolute inset-0 overflow-hidden">
@@ -66,9 +134,9 @@ function DetectionPage() {
         )}
 
         <div className="absolute top-4 left-4">
-          <Badge className={`${scanning ? "bg-warning" : "bg-success"} text-white border-0`}>
+          <Badge className={`${cameraError ? "bg-danger" : scanning ? "bg-warning" : "bg-success"} text-white border-0`}>
             <span className="mr-2 h-2 w-2 rounded-full bg-white animate-pulse" />
-            {scanning ? "Scanning..." : "Camera Active"}
+            {cameraError ? "Camera unavailable" : scanning ? "Scanning..." : "Camera Active"}
           </Badge>
         </div>
       </div>
@@ -76,7 +144,7 @@ function DetectionPage() {
       <div className="flex justify-center">
         <Button
           onClick={() => start()}
-          disabled={scanning}
+          disabled={scanning || !cameraReady}
           size="lg"
           className="rounded-xl bg-navy px-10 py-7 text-base font-semibold text-white hover:bg-electric hover:shadow-glow transition-all animate-pulse-glow"
         >

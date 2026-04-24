@@ -37,7 +37,7 @@ function Landing() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="font-display text-5xl font-extrabold leading-tight text-navy lg:text-6xl">
-              AI-Powered <span className="bg-gradient-accent bg-clip-text text-transparent">Eye Health</span> Detection
+              AI-Powered <span className="bg-gradient-accent bg-clip-text text-white">Eye Health</span> Detection
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
               Real-time Wet & Dry Eye Detection with Eyeball Movement Tracking using LLM + OpenCV.
